@@ -212,7 +212,7 @@ export default function CreatePostPage() {
               <span>All systems operational</span>
             </div>
             <div>•</div>
-            <div>SocialSync v1.0</div>
+            <div>SocioSync v1.0</div>
           </div>
         </div>
       </div>

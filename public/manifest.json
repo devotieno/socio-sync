@@ -1,6 +1,6 @@
 {
-  "name": "SocialSync - Social Media Management Platform",
-  "short_name": "SocialSync",
+  "name": "SocioSync - Social Media Management Platform",
+  "short_name": "SocioSync",
   "description": "Manage all your social media accounts from one dashboard",
   "start_url": "/",
   "display": "standalone",

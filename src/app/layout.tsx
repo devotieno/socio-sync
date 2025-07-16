@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SocialSync - Social Media Management Platform",
+  title: "SocioSync - Social Media Management Platform",
   description: "Manage all your social media accounts from one dashboard. Schedule posts, track analytics, and grow your online presence.",
   icons: {
     icon: [
