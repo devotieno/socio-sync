@@ -15,9 +15,10 @@ export const metadata: Metadata = {
   description: "Manage all your social media accounts from one dashboard. Schedule posts, track analytics, and grow your online presence.",
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
+    shortcut: '/favicon.ico',
     apple: [
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
@@ -32,6 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased bg-gray-50`}>
         <Providers>
           <DevelopmentNotice />

@@ -29,11 +29,6 @@ export default function Home() {
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Hero Logo */}
-          <div className="flex justify-center mb-8">
-            <Logo size={120} showText={false} className="drop-shadow-lg" />
-          </div>
-          
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
             Post to All Major Platforms
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
