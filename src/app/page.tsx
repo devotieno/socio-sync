@@ -1,102 +1,146 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRightIcon, CheckIcon } from "@heroicons/react/24/outline";
+import Logo from "@/components/Logo";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <header className="container mx-auto px-4 py-6">
+        <nav className="flex items-center justify-between">
+          <Logo size={32} />
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/auth/signin"
+              className="text-gray-600 hover:text-gray-900 font-medium"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/signup"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Get Started
+            </Link>
+          </div>
+        </nav>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Hero Section */}
+      <main className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Hero Logo */}
+          <div className="flex justify-center mb-8">
+            <Logo size={120} showText={false} className="drop-shadow-lg" />
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            Post to All Major Platforms
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {" "}in One Click{" "}
+            </span>
+          </h1>
+          
+          {/* Highlight Badge */}
+          <div className="inline-flex items-center bg-blue-50 border border-blue-200 rounded-full px-6 py-2 mb-6">
+            <span className="text-blue-600 font-semibold text-sm">✨ Save Hours Daily • Cross-Post Instantly • Grow Faster</span>
+          </div>
+          
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Schedule posts, track analytics, and grow your online presence across
+            Twitter, Facebook, Instagram, LinkedIn, TikTok, and YouTube - all from one powerful dashboard.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/auth/signup"
+              className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg flex items-center justify-center"
+            >
+              Start Free Trial
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+            <Link
+              href="/demo"
+              className="border border-gray-300 text-gray-700 px-8 py-4 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-lg"
+            >
+              View Demo
+            </Link>
+          </div>
+        </div>
+
+        {/* Features Grid */}
+        <div className="mt-24 grid md:grid-cols-3 gap-8">
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              📅
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              Smart Scheduling
+            </h3>
+            <p className="text-gray-600">
+              Schedule posts across multiple platforms with optimal timing suggestions
+              based on your audience engagement.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+              📊
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              Analytics Dashboard
+            </h3>
+            <p className="text-gray-600">
+              Track your performance with detailed analytics including views, likes,
+              shares, and engagement rates.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+              🔗
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              One-Click Publishing
+            </h3>
+            <p className="text-gray-600">
+              Post to Twitter, Facebook, Instagram, LinkedIn, TikTok,
+              Threads, and YouTube simultaneously with just one click.
+            </p>
+          </div>
+        </div>
+
+        {/* Supported Platforms */}
+        <div className="mt-24 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12">
+            Supported Platforms
+          </h2>
+          <div className="flex flex-wrap justify-center items-center gap-8">
+            {[
+              { name: 'Twitter', icon: '🐦' },
+              { name: 'Facebook', icon: '📘' },
+              { name: 'Instagram', icon: '📷' },
+              { name: 'LinkedIn', icon: '💼' },
+              { name: 'TikTok', icon: '🎵' },
+              { name: 'Threads', icon: '🧵' },
+              { name: 'YouTube', icon: '📺' },
+            ].map((platform) => (
+              <div
+                key={platform.name}
+                className="flex items-center space-x-3 bg-white px-6 py-4 rounded-lg shadow-sm border border-gray-100"
+              >
+                <span className="text-2xl">{platform.icon}</span>
+                <span className="font-semibold text-gray-900">{platform.name}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200">
+        <div className="text-center text-gray-600">
+          <p>&copy; 2025 SocialSync. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );
