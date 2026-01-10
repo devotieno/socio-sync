@@ -50,10 +50,18 @@ export function MultiPlatformManager({ onAccountsChange }: MultiPlatformManagerP
     setError(null);
 
     try {
-      // Get auth URL for the platform
+      // Handle Twitter differently since it uses PIN-based auth
+      if (platformId === 'twitter') {
+        // Redirect to Twitter account management page instead
+        window.location.href = '/dashboard/accounts?tab=twitter';
+        return;
+      }
+
+      // Get auth URL for other platforms
       const authResponse = await fetch(`/api/${platformId}/auth`);
       if (!authResponse.ok) {
-        throw new Error(`Failed to get ${platformId} auth URL`);
+        const errorData = await authResponse.json().catch(() => null);
+        throw new Error(errorData?.error || `Failed to get ${platformId} auth URL`);
       }
 
       const authData = await authResponse.json();

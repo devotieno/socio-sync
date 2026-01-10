@@ -56,6 +56,12 @@ class ScheduledPostsService {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Failed to process scheduled posts:', response.status, errorText);
+        
+        // If we get permission errors, back off more aggressively
+        if (response.status === 403 || response.status === 401 || errorText.includes('permission')) {
+          this.checkInterval = Math.min(this.checkInterval * 2, 300000); // Max 5 minutes
+          console.log(`Permission error detected, backing off to ${this.checkInterval}ms intervals`);
+        }
         return;
       }
 

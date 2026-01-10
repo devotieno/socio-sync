@@ -13,31 +13,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if we have stored Twitter data in Firestore
-    const userDocRef = doc(db, 'users', session.user.id);
-    const userDoc = await getDoc(userDocRef);
-    
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
+    try {
+      // Check if we have stored Twitter data in Firestore
+      const userDocRef = doc(db, 'users', session.user.id);
+      const userDoc = await getDoc(userDocRef);
       
-      // Check new connectedAccounts structure first
-      if (userData?.connectedAccounts) {
-        const twitterAccounts = userData.connectedAccounts.filter(
-          (account: any) => account.platform === 'twitter'
-        );
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
         
-        if (twitterAccounts.length > 0) {
-          const formattedAccounts = twitterAccounts.map((account: any) => ({
-            id: account.accountId,
-            accountId: account.accountId,
-            username: account.username,
-            name: account.displayName,
-            profile_image_url: account.profileImage,
-            followers_count: account.followers,
-            following_count: 0, // Not stored in new structure
-            verified: false,
-            connected_via: 'account_linking',
-            connected_at: account.connectedAt,
+        // Check new connectedAccounts structure first
+        if (userData?.connectedAccounts) {
+          const twitterAccounts = userData.connectedAccounts.filter(
+            (account: any) => account.platform === 'twitter'
+          );
+          
+          if (twitterAccounts.length > 0) {
+            const formattedAccounts = twitterAccounts.map((account: any) => ({
+              id: account.accountId,
+              accountId: account.accountId,
+              username: account.username,
+              name: account.displayName,
+              profile_image_url: account.profileImage,
+              followers_count: account.followers,
+              following_count: 0, // Not stored in new structure
+              verified: false,
+              connected_via: 'account_linking',
+              connected_at: account.connectedAt,
             isDefault: account.isDefault || false,
           }));
           
@@ -100,6 +101,15 @@ export async function GET(request: NextRequest) {
     // No Twitter accounts found
     return NextResponse.json({ success: false, connected: false, accounts: [] }, { status: 404 });
     
+  } catch (firebaseError) {
+    console.error('Firebase error:', firebaseError);
+    return NextResponse.json({ 
+      success: false, 
+      connected: false, 
+      accounts: [],
+      error: 'Database error' 
+    }, { status: 200 });
+  }
   } catch (error) {
     console.error('Twitter account fetch error:', error);
     return NextResponse.json(
