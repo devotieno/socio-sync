@@ -80,14 +80,19 @@ export function PostCard({
   const dateInfo = getDateInfo();
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-shadow duration-200">
       {/* Header */}
       <div className="p-6 pb-4">
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-2">
               <StatusBadge status={post.status} />
-              <span className={`text-sm ${dateInfo.className}`}>
+              <span className={`text-sm ${
+                dateInfo.className.includes('yellow') ? 'text-yellow-400' :
+                dateInfo.className.includes('green') ? 'text-green-400' :
+                dateInfo.className.includes('red') ? 'text-red-400' :
+                'text-slate-400'
+              }`}>
                 {dateInfo.label} {formatDate(dateInfo.date)}
               </span>
             </div>
@@ -97,10 +102,10 @@ export function PostCard({
                 className="flex-1 cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
-                <p className="text-gray-900 text-lg leading-relaxed">
+                <p className="text-white text-lg leading-relaxed">
                   {isExpanded ? post.content : truncateContent(post.content, 150)}
                   {post.content.length > 150 && (
-                    <button className="ml-2 text-blue-600 hover:text-blue-800 font-medium text-sm">
+                    <button className="ml-2 text-blue-400 hover:text-blue-300 font-medium text-sm">
                       {isExpanded ? 'Show less' : 'Show more'}
                     </button>
                   )}
@@ -129,30 +134,30 @@ export function PostCard({
 
         {/* Analytics Preview */}
         {post.analytics && post.status === 'published' && (
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Stats</h4>
+          <div className="mt-4 p-3 bg-slate-900/50 border border-slate-700/50 rounded-lg">
+            <h4 className="text-sm font-medium text-white mb-2">Quick Stats</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-xl font-bold text-blue-600">{post.analytics.likes}</div>
-                <div className="text-xs text-gray-500">Likes</div>
+                <div className="text-xl font-bold text-blue-400">{post.analytics.likes}</div>
+                <div className="text-xs text-slate-400">Likes</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-green-600">{post.analytics.shares}</div>
-                <div className="text-xs text-gray-500">Shares</div>
+                <div className="text-xl font-bold text-green-400">{post.analytics.shares}</div>
+                <div className="text-xs text-slate-400">Shares</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-purple-600">{post.analytics.comments}</div>
-                <div className="text-xs text-gray-500">Comments</div>
+                <div className="text-xl font-bold text-purple-400">{post.analytics.comments}</div>
+                <div className="text-xs text-slate-400">Comments</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-orange-600">{post.analytics.views}</div>
-                <div className="text-xs text-gray-500">Views</div>
+                <div className="text-xl font-bold text-orange-400">{post.analytics.views}</div>
+                <div className="text-xs text-slate-400">Views</div>
               </div>
             </div>
             {onViewAnalytics && (
               <button 
                 onClick={() => onViewAnalytics(post)}
-                className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                className="mt-2 text-sm text-blue-400 hover:text-blue-300 font-medium"
               >
                 View detailed analytics →
               </button>
@@ -162,12 +167,12 @@ export function PostCard({
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-3 bg-gray-50 border-t rounded-b-lg flex justify-between items-center">
-        <div className="text-sm text-gray-500">
+      <div className="px-6 py-3 bg-slate-900/50 border-t border-slate-700/50 rounded-b-2xl flex justify-between items-center">
+        <div className="text-sm text-slate-400">
           Post ID: {post.id}
         </div>
         {post.status === 'failed' && (
-          <div className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
+          <div className="text-xs text-red-400 bg-red-950/30 border border-red-700/50 px-2 py-1 rounded">
             Publishing failed - check error details
           </div>
         )}

@@ -49,6 +49,7 @@ export default function TwitterAccount() {
   const checkTwitterAccount = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch('/api/twitter/account');
       
       if (response.ok) {
@@ -58,11 +59,17 @@ export default function TwitterAccount() {
         // No accounts connected
         setAccounts([]);
       } else {
-        throw new Error('Failed to check Twitter accounts');
+        // Try to get error details from response
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.error || errorData?.details || 'Failed to check Twitter accounts';
+        console.warn('Twitter account check failed:', errorMessage);
+        setAccounts([]); // Set empty accounts instead of throwing
+        setError(`Unable to load Twitter accounts: ${errorMessage}`);
       }
     } catch (err) {
       console.error('Error checking Twitter accounts:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setAccounts([]); // Set empty accounts on error
+      setError(err instanceof Error ? err.message : 'Network error occurred');
     } finally {
       setLoading(false);
     }
@@ -105,16 +112,13 @@ export default function TwitterAccount() {
     try {
       setLoading(true);
       
-      const response = await fetch('/api/twitter/account', {
+      const response = await fetch(`/api/twitter/account?accountId=${accountId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ accountId }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to disconnect Twitter account');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to disconnect Twitter account');
       }
 
       // Remove the account from the local state

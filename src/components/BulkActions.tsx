@@ -72,16 +72,16 @@ export function BulkActions({
   };
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+    <div className="bg-slate-900/50 border border-slate-700/50 rounded-lg p-4 mb-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <div className="w-4 h-4 bg-white rounded-sm flex items-center justify-center">
+              <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
-            <span className="text-sm font-medium text-blue-900">
+            <span className="text-sm font-medium text-white">
               {selectedPosts.length} post{selectedPosts.length !== 1 ? 's' : ''} selected
             </span>
           </div>
@@ -93,13 +93,13 @@ export function BulkActions({
                 disabled={isLoading}
                 className={`px-3 py-1 text-sm font-medium rounded ${
                   isLoading && action === 'delete'
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                     : 'bg-red-600 text-white hover:bg-red-700'
                 } transition-colors flex items-center space-x-1`}
               >
                 {isLoading && action === 'delete' ? (
                   <>
-                    <div className="animate-spin rounded-full h-3 w-3 border border-gray-500 border-t-transparent"></div>
+                    <div className="animate-spin rounded-full h-3 w-3 border border-slate-500 border-t-transparent"></div>
                     <span>Deleting...</span>
                   </>
                 ) : (
@@ -119,13 +119,13 @@ export function BulkActions({
                 disabled={isLoading}
                 className={`px-3 py-1 text-sm font-medium rounded ${
                   isLoading && action === 'retry'
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                     : 'bg-yellow-600 text-white hover:bg-yellow-700'
                 } transition-colors flex items-center space-x-1`}
               >
                 {isLoading && action === 'retry' ? (
                   <>
-                    <div className="animate-spin rounded-full h-3 w-3 border border-gray-500 border-t-transparent"></div>
+                    <div className="animate-spin rounded-full h-3 w-3 border border-slate-500 border-t-transparent"></div>
                     <span>Retrying...</span>
                   </>
                 ) : (
@@ -143,7 +143,7 @@ export function BulkActions({
 
         <button
           onClick={onClearSelection}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+          className="text-sm text-slate-400 hover:text-white font-medium"
         >
           Clear selection
         </button>
@@ -151,7 +151,7 @@ export function BulkActions({
 
       {/* Action Status Messages */}
       {selectedPostsData.length > 0 && (
-        <div className="mt-2 text-xs text-blue-700">
+        <div className="mt-2 text-xs text-slate-400">
           {canDelete && `${selectedPostsData.filter(p => p.status === 'draft' || p.status === 'scheduled' || p.status === 'failed').length} posts can be deleted`}
           {canDelete && canRetry && ' • '}
           {canRetry && `${selectedPostsData.filter(p => p.status === 'failed').length} failed posts can be retried`}

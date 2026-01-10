@@ -61,36 +61,65 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
       
       // Transform the API response to match our component structure
       const transformedSummary: AnalyticsSummary = {
-        totalPosts: data.overview.totalPosts,
-        totalImpressions: data.overview.totalImpressions,
-        totalEngagements: data.overview.totalEngagement,
-        averageEngagementRate: data.overview.averageEngagement,
-        topPerformingPost: data.topPerformingPosts[0] ? {
-          id: data.topPerformingPosts[0].id,
-          content: data.topPerformingPosts[0].content,
-          engagementRate: data.topPerformingPosts[0].engagement
+        totalPosts: data.totalPosts || 0,
+        totalImpressions: data.totalImpressions || 0,
+        totalEngagements: data.totalEngagement || 0,
+        averageEngagementRate: data.averageEngagement || 0,
+        topPerformingPost: data.topPosts?.[0] ? {
+          id: data.topPosts[0].id,
+          content: data.topPosts[0].content,
+          engagementRate: data.topPosts[0].engagement || 0
         } : null,
-        platformBreakdown: data.platformBreakdown
+        platformBreakdown: data.platformBreakdown?.map((p: any) => ({
+          platform: p.platform,
+          posts: p.count,
+          engagements: Math.floor((p.count * data.averageEngagement) || 0)
+        })) || []
       };
       
       setSummary(transformedSummary);
       
-      // For individual post analytics, we'll use mock data for now
-      // In a real app, you'd fetch individual analytics for each post
-      const mockAnalytics: PostAnalytics[] = posts.slice(0, 5).map((post, index) => ({
-        postId: post.id || `mock-post-${index}`,
-        platform: post.platforms?.[0] || 'unknown',
-        impressions: Math.floor(Math.random() * 5000) + 100,
-        likes: Math.floor(Math.random() * 200) + 10,
-        comments: Math.floor(Math.random() * 50) + 1,
-        shares: Math.floor(Math.random() * 30) + 1,
-        clicks: Math.floor(Math.random() * 100) + 5,
-        engagementRate: Math.random() * 10,
-        reach: Math.floor(Math.random() * 3000) + 50,
-        lastUpdated: new Date()
-      }));
+      // Fetch real analytics data for individual posts
+      const postAnalytics: PostAnalytics[] = [];
       
-      setAnalytics(mockAnalytics);
+      for (const post of posts.slice(0, 5)) {
+        if (!post.id) continue;
+        
+        try {
+          const analyticsResponse = await fetch(`/api/analytics/post/${post.id}`);
+          if (analyticsResponse.ok) {
+            const analyticsData = await analyticsResponse.json();
+            
+            if (analyticsData.analytics) {
+              const engagement = (analyticsData.analytics.likes || 0) + 
+                               (analyticsData.analytics.retweets || 0) + 
+                               (analyticsData.analytics.replies || 0) + 
+                               (analyticsData.analytics.bookmarks || 0);
+              
+              const engagementRate = analyticsData.analytics.impressions > 0
+                ? (engagement / analyticsData.analytics.impressions) * 100
+                : 0;
+              
+              postAnalytics.push({
+                postId: post.id,
+                platform: post.platforms?.[0] || 'twitter',
+                impressions: analyticsData.analytics.impressions || 0,
+                likes: analyticsData.analytics.likes || 0,
+                comments: analyticsData.analytics.replies || 0,
+                shares: analyticsData.analytics.retweets || 0,
+                clicks: analyticsData.analytics.urlClicks || 0,
+                engagementRate,
+                reach: analyticsData.analytics.impressions || 0,
+                lastUpdated: new Date()
+              });
+            }
+          }
+        } catch (err) {
+          console.error(`Error fetching analytics for post ${post.id}:`, err);
+        }
+      }
+      
+      setAnalytics(postAnalytics);
       
     } catch (err) {
       console.error('Error fetching analytics:', err);
@@ -102,6 +131,15 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
 
   useEffect(() => {
     fetchAnalytics();
+    
+    // Auto-refresh analytics every 30 seconds
+    const refreshInterval = setInterval(() => {
+      console.log('Auto-refreshing analytics...');
+      fetchAnalytics();
+    }, 30000); // 30 seconds
+    
+    // Cleanup interval on unmount
+    return () => clearInterval(refreshInterval);
   }, [fetchAnalytics]);
 
   const formatNumber = (num: number): string => {
@@ -112,18 +150,18 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
 
   if (isLoading) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
+      <div className={`backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20 p-6 ${className}`}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Analytics Overview</h2>
-          <ArrowPathIcon className="w-5 h-5 text-gray-400 animate-spin" />
+          <h2 className="text-lg font-outfit font-semibold text-white">Analytics Overview</h2>
+          <ArrowPathIcon className="w-5 h-5 text-slate-400 animate-spin" />
         </div>
         <div className="animate-pulse space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-gray-200 rounded h-20"></div>
+              <div key={i} className="bg-slate-700/50 rounded h-20"></div>
             ))}
           </div>
-          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-slate-700/50 rounded"></div>
         </div>
       </div>
     );
@@ -131,14 +169,14 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
 
   if (error || !summary) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
+      <div className={`backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20 p-6 ${className}`}>
         <div className="text-center py-8">
-          <ChartBarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Analytics Unavailable</h3>
-          <p className="text-gray-500 mb-4">{error}</p>
+          <ChartBarIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-lg font-outfit font-medium text-white mb-2">Analytics Unavailable</h3>
+          <p className="text-slate-400 mb-4">{error}</p>
           <button
             onClick={fetchAnalytics}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-white text-black rounded-lg font-semibold hover:shadow-xl hover:shadow-white/20 hover:scale-105 transition-all"
           >
             Retry
           </button>
@@ -148,13 +186,13 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
+    <div className={`backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20 p-6 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Analytics Overview</h2>
+        <h2 className="text-lg font-outfit font-semibold text-white">Analytics Overview</h2>
         <button
           onClick={fetchAnalytics}
-          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-2 text-slate-400 hover:text-white transition-colors"
           title="Refresh analytics"
         >
           <ArrowPathIcon className="w-5 h-5" />
@@ -163,104 +201,84 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-4">
           <div className="flex items-center">
-            <ChartBarIcon className="w-8 h-8 text-blue-600 mr-3" />
+            <ChartBarIcon className="w-8 h-8 text-blue-400 mr-3" />
             <div>
-              <p className="text-sm font-medium text-blue-600">Total Posts</p>
-              <p className="text-2xl font-bold text-blue-900">{summary?.totalPosts || 0}</p>
+              <p className="text-sm font-medium text-blue-300">Total Posts</p>
+              <p className="text-2xl font-bold text-white">{summary?.totalPosts || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-green-50 rounded-lg p-4">
+        <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-4">
           <div className="flex items-center">
-            <UserGroupIcon className="w-8 h-8 text-green-600 mr-3" />
+            <UserGroupIcon className="w-8 h-8 text-green-400 mr-3" />
             <div>
-              <p className="text-sm font-medium text-green-600">Total Impressions</p>
-              <p className="text-2xl font-bold text-green-900">{formatNumber(summary?.totalImpressions || 0)}</p>
+              <p className="text-sm font-medium text-green-300">Total Impressions</p>
+              <p className="text-2xl font-bold text-white">{formatNumber(summary?.totalImpressions || 0)}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-purple-50 rounded-lg p-4">
+        <div className="bg-purple-900/30 border border-purple-700/50 rounded-lg p-4">
           <div className="flex items-center">
-            <HeartIcon className="w-8 h-8 text-purple-600 mr-3" />
+            <HeartIcon className="w-8 h-8 text-purple-400 mr-3" />
             <div>
-              <p className="text-sm font-medium text-purple-600">Total Engagements</p>
-              <p className="text-2xl font-bold text-purple-900">{formatNumber(summary?.totalEngagements || 0)}</p>
+              <p className="text-sm font-medium text-purple-300">Total Engagements</p>
+              <p className="text-2xl font-bold text-white">{formatNumber(summary?.totalEngagements || 0)}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-orange-50 rounded-lg p-4">
+        <div className="bg-orange-900/30 border border-orange-700/50 rounded-lg p-4">
           <div className="flex items-center">
-            <ArrowTrendingUpIcon className="w-8 h-8 text-orange-600 mr-3" />
+            <ArrowTrendingUpIcon className="w-8 h-8 text-orange-400 mr-3" />
             <div>
-              <p className="text-sm font-medium text-orange-600">Avg. Engagement Rate</p>
-              <p className="text-2xl font-bold text-orange-900">{summary?.averageEngagementRate?.toFixed(1) || 0}%</p>
+              <p className="text-sm font-medium text-orange-300">Avg. Engagement Rate</p>
+              <p className="text-2xl font-bold text-white">{summary?.averageEngagementRate?.toFixed(1) || 0}%</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Platform Breakdown */}
-      {summary?.platformBreakdown && summary.platformBreakdown.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-md font-medium text-gray-900 mb-3">Platform Breakdown</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {summary.platformBreakdown.map((platform) => (
-              <div key={platform.platform} className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 capitalize">{platform.platform}</span>
-                  <span className="text-lg font-bold text-gray-900">{platform.posts}</span>
-                </div>
-                <div className="mt-1">
-                  <span className="text-xs text-gray-500">{formatNumber(platform.engagements)} engagements</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Top Performing Post */}
       {summary?.topPerformingPost && (
         <div className="mb-6">
-          <h3 className="text-md font-medium text-gray-900 mb-3">Top Performing Post</h3>
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+          <h3 className="text-md font-outfit font-medium text-white mb-3">Top Performing Post</h3>
+          <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-slate-700/50 rounded-lg p-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-sm text-gray-700 mb-2">{summary.topPerformingPost.content}</p>
-                <div className="flex items-center space-x-4 text-xs text-gray-500">
+                <p className="text-sm text-white mb-2">{summary.topPerformingPost.content}</p>
+                <div className="flex items-center space-x-4 text-xs text-slate-400">
                   <span>Engagement Rate: {summary.topPerformingPost.engagementRate.toFixed(1)}%</span>
                 </div>
               </div>
               <div className="ml-4">
-                <ArrowTrendingUpIcon className="w-6 h-6 text-green-600" />
+                <ArrowTrendingUpIcon className="w-6 h-6 text-green-400" />
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Recent Posts Analytics */}
+      {/* Recent Posts Performance */}
       {analytics.length > 0 && (
         <div>
-          <h3 className="text-md font-medium text-gray-900 mb-3">Recent Posts Performance</h3>
+          <h3 className="text-md font-outfit font-medium text-white mb-3">Recent Posts Performance</h3>
           <div className="space-y-3">
             {analytics.slice(0, 3).map((post) => (
-              <div key={post.postId} className="bg-gray-50 rounded-lg p-3">
+              <div key={post.postId} className="bg-slate-900/50 border border-slate-700/50 rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded capitalize">
+                    <span className="text-xs px-2 py-1 bg-blue-900/50 text-blue-400 border border-blue-700/50 rounded capitalize">
                       {post.platform}
                     </span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-slate-300">
                       {formatNumber(post.impressions)} impressions
                     </span>
                   </div>
-                  <div className="flex items-center space-x-4 text-xs text-gray-500">
+                  <div className="flex items-center space-x-4 text-xs text-slate-400">
                     <span className="flex items-center">
                       <HeartIcon className="w-3 h-3 mr-1" />
                       {post.likes}

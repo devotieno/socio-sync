@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { SocialMediaPost } from '@/types/post';
 
 // This endpoint processes scheduled posts that are due for publishing
@@ -8,50 +6,88 @@ export async function POST(request: NextRequest) {
   try {
     const { authorization } = Object.fromEntries(request.headers.entries());
     
-    // Simple API key check for cron jobs (you can make this more secure)
+    // Check for Vercel Cron Secret or fallback to API key
+    const vercelCronSecret = process.env.CRON_SECRET;
     const cronApiKey = process.env.CRON_API_KEY || 'dev-cron-key';
-    if (authorization !== `Bearer ${cronApiKey}`) {
+    
+    // Verify authorization
+    const isAuthorized = 
+      (vercelCronSecret && authorization === `Bearer ${vercelCronSecret}`) ||
+      authorization === `Bearer ${cronApiKey}`;
+    
+    if (!isAuthorized) {
+      console.error('Unauthorized cron request');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const now = new Date();
     console.log('Processing scheduled posts at:', now.toISOString());
     
-    // Query for scheduled posts that are due
-    // Note: We'll get ALL scheduled posts and filter in code due to Firestore date comparison issues
-    const postsQuery = query(
-      collection(db, 'posts'),
-      where('status', '==', 'scheduled')
-    );
+    // Check if Firebase Admin credentials are configured
+    const hasAdminCredentials = process.env.FIREBASE_PROJECT_ID && 
+                                process.env.FIREBASE_CLIENT_EMAIL && 
+                                process.env.FIREBASE_PRIVATE_KEY;
     
-    const querySnapshot = await getDocs(postsQuery);
-    const allScheduledPosts = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as (SocialMediaPost & { id: string })[];
+    if (!hasAdminCredentials) {
+      console.warn('⚠️  Firebase Admin SDK not configured. Scheduled posts will not work until you add credentials.');
+      return NextResponse.json({
+        error: 'Firebase Admin SDK not configured',
+        message: 'Please add FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY to .env.local',
+        timestamp: new Date().toISOString()
+      }, { status: 500 });
+    }
     
-    console.log(`Found ${allScheduledPosts.length} total scheduled posts`);
-    
-    // Filter posts that are actually due (client-side filtering)
-    const duePosts = allScheduledPosts.filter(post => {
-      if (!post.scheduledAt) return false;
+    try {
+      // Dynamic import Firebase Admin
+      const admin = await import('firebase-admin');
       
-      // Handle both Firestore Timestamp and Date objects
-      let scheduledDate: Date;
-      if (typeof post.scheduledAt === 'object' && 'toDate' in post.scheduledAt) {
-        // Firestore Timestamp
-        scheduledDate = (post.scheduledAt as any).toDate();
-      } else if (post.scheduledAt instanceof Date) {
-        scheduledDate = post.scheduledAt;
-      } else {
-        // String date
-        scheduledDate = new Date(post.scheduledAt as string);
+      // Initialize Firebase Admin if not already initialized
+      if (!admin.apps.length) {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+          }),
+        });
       }
       
-      return scheduledDate <= now;
-    });
+      // Use Firebase Admin SDK for server-side operations (bypasses security rules)
+      const db = admin.firestore();
     
-    console.log(`Found ${duePosts.length} posts actually due for publishing`);
+      // Query for scheduled posts that are due
+      const postsSnapshot = await db
+        .collection('posts')
+        .where('status', '==', 'scheduled')
+        .get();
+    
+      const allScheduledPosts = postsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as (SocialMediaPost & { id: string })[];
+    
+      console.log(`Found ${allScheduledPosts.length} total scheduled posts`);
+    
+      // Filter posts that are actually due (client-side filtering)
+      const duePosts = allScheduledPosts.filter(post => {
+        if (!post.scheduledAt) return false;
+      
+        // Handle both Firestore Timestamp and Date objects
+        let scheduledDate: Date;
+        if (typeof post.scheduledAt === 'object' && 'toDate' in post.scheduledAt) {
+          // Firestore Timestamp
+          scheduledDate = (post.scheduledAt as any).toDate();
+        } else if (post.scheduledAt instanceof Date) {
+          scheduledDate = post.scheduledAt;
+        } else {
+          // String date
+          scheduledDate = new Date(post.scheduledAt as string);
+        }
+      
+        return scheduledDate <= now;
+      });
+    
+      console.log(`Found ${duePosts.length} posts actually due for publishing`);
     
     const results = [];
     
@@ -75,8 +111,10 @@ export async function POST(request: NextRequest) {
         console.log(`Publishing to accounts:`, post.selectedAccounts);
         await publishToSocialMedia(post.id, post, post.userId);
         
-        // Update post status to published
-        await updateDoc(doc(db, 'posts', post.id), {
+        // Update post status to published using Admin SDK
+        const admin = await import('firebase-admin');
+        const db = admin.firestore();
+        await db.collection('posts').doc(post.id).update({
           status: 'published',
           publishedAt: now,
           updatedAt: now
@@ -101,7 +139,9 @@ export async function POST(request: NextRequest) {
           
           // Don't mark as failed, leave as scheduled for retry
           // Just add a retry count or delay the next attempt
-          await updateDoc(doc(db, 'posts', post.id), {
+          const admin = await import('firebase-admin');
+          const db = admin.firestore();
+          await db.collection('posts').doc(post.id).update({
             retryCount: ((post as any).retryCount || 0) + 1,
             lastRetryAt: now,
             updatedAt: now
@@ -115,7 +155,9 @@ export async function POST(request: NextRequest) {
           });
         } else {
           // For other errors, mark as failed
-          await updateDoc(doc(db, 'posts', post.id), {
+          const admin = await import('firebase-admin');
+          const db = admin.firestore();
+          await db.collection('posts').doc(post.id).update({
             status: 'failed',
             updatedAt: now,
             failureReason: errorMessage
@@ -135,6 +177,15 @@ export async function POST(request: NextRequest) {
       results
     });
     
+    } catch (firebaseError) {
+      console.error('Firebase error in scheduled posts:', firebaseError);
+      return NextResponse.json({
+        error: 'Internal server error',
+        details: 'Missing or insufficient permissions.',
+        timestamp: new Date().toISOString()
+      }, { status: 500 });
+    }
+    
   } catch (error) {
     console.error('Error processing scheduled posts:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
@@ -152,17 +203,36 @@ export async function GET(request: NextRequest) {
     const now = new Date();
     console.log('Checking for scheduled posts at:', now.toISOString());
     
-    // Query for scheduled posts (get all and filter client-side)
-    const postsQuery = query(
-      collection(db, 'posts'),
-      where('status', '==', 'scheduled')
-    );
+    // Check if Firebase Admin credentials are configured
+    const hasAdminCredentials = process.env.FIREBASE_PROJECT_ID && 
+                                process.env.FIREBASE_CLIENT_EMAIL && 
+                                process.env.FIREBASE_PRIVATE_KEY;
     
-    const querySnapshot = await getDocs(postsQuery);
-    const allScheduledPosts = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as any[];
+    if (!hasAdminCredentials) {
+      console.warn('⚠️  Firebase Admin SDK not configured');
+      return NextResponse.json({
+        error: 'Firebase Admin SDK not configured',
+        message: 'Please add credentials to .env.local',
+      }, { status: 500 });
+    }
+    
+    try {
+      // Dynamic import Firebase Admin
+      const admin = await import('firebase-admin');
+      
+      // Use Firebase Admin SDK for server-side operations
+      const db = admin.firestore();
+    
+      // Query for scheduled posts (get all and filter client-side)
+      const postsSnapshot = await db
+        .collection('posts')
+        .where('status', '==', 'scheduled')
+        .get();
+    
+      const allScheduledPosts = postsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as any[];
     
     // Filter posts that are actually due
     const duePosts = allScheduledPosts.filter(post => {
@@ -192,6 +262,15 @@ export async function GET(request: NextRequest) {
         selectedAccounts: post.selectedAccounts
       }))
     });
+    
+    } catch (firebaseError) {
+      console.error('Firebase error in GET scheduled posts:', firebaseError);
+      return NextResponse.json({
+        error: 'Internal server error',
+        details: 'Missing or insufficient permissions.',
+        timestamp: new Date().toISOString()
+      }, { status: 500 });
+    }
     
   } catch (error) {
     console.error('Error checking scheduled posts:', error);

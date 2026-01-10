@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Data Deletion - Social Media Hub',
-  description: 'Request data deletion for Social Media Posting Hub'
+  title: 'Data Deletion - Xync',
+  description: 'Request data deletion for Xync - Twitter/X Management Platform'
 }
 
 export default function DataDeletion() {
@@ -15,7 +15,7 @@ export default function DataDeletion() {
           <div className="prose prose-gray max-w-none">
             <section className="mb-8">
               <p className="text-gray-700 mb-6">
-                If you want to delete your data from Social Media Posting Hub, you have several options:
+                If you want to delete your data from Xync, you have several options:
               </p>
 
               <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">
@@ -39,8 +39,8 @@ export default function DataDeletion() {
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Your account information (email, name, profile data)</li>
-                <li>All stored social media access tokens</li>
-                <li>Your post history and scheduled posts</li>
+                <li>All stored Twitter/X access tokens</li>
+                <li>Your tweet history and scheduled tweets</li>
                 <li>Analytics data and insights</li>
                 <li>Account preferences and settings</li>
                 <li>Any uploaded media files</li>

@@ -54,13 +54,13 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
                           filters.hasAnalytics !== 'all';
 
   return (
-    <div className="bg-white border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl">
+      <div className="px-6 py-4">
         {/* Search Bar */}
         <div className="mb-4">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -69,7 +69,7 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
               placeholder="Search posts by content..."
               value={filters.search}
               onChange={(e) => updateFilter('search', e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full pl-10 pr-3 py-2 bg-slate-900/50 border border-slate-700/50 text-white placeholder-slate-500 rounded-lg focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all text-sm"
             />
           </div>
         </div>
@@ -79,11 +79,11 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
           <div className="flex flex-wrap items-center gap-4">
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-white mb-1">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => updateFilter('status', e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+                className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 min-w-[120px]"
               >
                 <option value="all">All Status</option>
                 <option value="draft">📝 Draft</option>
@@ -95,11 +95,11 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
 
             {/* Platform Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
+              <label className="block text-sm font-medium text-white mb-1">Platform</label>
               <select
                 value={filters.platform}
                 onChange={(e) => updateFilter('platform', e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+                className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 min-w-[120px]"
               >
                 <option value="all">All Platforms</option>
                 {Object.values(PLATFORM_CONFIGS).map((platform) => (
@@ -112,11 +112,11 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
 
             {/* Date Range Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+              <label className="block text-sm font-medium text-white mb-1">Date Range</label>
               <select
                 value={filters.dateRange}
                 onChange={(e) => updateFilter('dateRange', e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
+                className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 min-w-[120px]"
               >
                 <option value="all">All Time</option>
                 <option value="today">Today</option>
@@ -130,7 +130,7 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
             {/* Advanced Filters Toggle */}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+              className="flex items-center space-x-1 text-sm text-white hover:text-slate-300 font-medium"
             >
               <span>Advanced</span>
               <svg 
@@ -149,12 +149,12 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-gray-600 hover:text-gray-800 font-medium"
+                className="text-sm text-slate-400 hover:text-white font-medium"
               >
                 Clear filters
               </button>
             )}
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-slate-400">
               {totalPosts} post{totalPosts !== 1 ? 's' : ''}
             </div>
           </div>
@@ -162,15 +162,15 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
 
         {/* Advanced Filters */}
         {isExpanded && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-slate-700/50">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* With Media Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Media</label>
+                <label className="block text-sm font-medium text-white mb-1">Media</label>
                 <select
                   value={filters.media}
                   onChange={(e) => updateFilter('media', e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 w-full"
+                  className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 w-full"
                 >
                   <option value="all">All Posts</option>
                   <option value="with-media">With Media</option>
@@ -182,11 +182,11 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
 
               {/* Engagement Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Engagement</label>
+                <label className="block text-sm font-medium text-white mb-1">Engagement</label>
                 <select
                   value={filters.engagement}
                   onChange={(e) => updateFilter('engagement', e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 w-full"
+                  className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 w-full"
                 >
                   <option value="all">All Posts</option>
                   <option value="high">High Engagement</option>
@@ -197,11 +197,11 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
 
               {/* Sort Order */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+                <label className="block text-sm font-medium text-white mb-1">Sort By</label>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => updateFilter('sortBy', e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 w-full"
+                  className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 w-full"
                 >
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
@@ -217,44 +217,44 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
         {hasActiveFilters && (
           <div className="mt-3 flex flex-wrap gap-2">
             {filters.status !== 'all' && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-900/50 text-blue-400 border border-blue-700/50">
                 Status: {filters.status}
                 <button 
                   onClick={() => updateFilter('status', 'all')}
-                  className="ml-1 text-blue-600 hover:text-blue-800"
+                  className="ml-1 text-blue-300 hover:text-blue-100"
                 >
                   ×
                 </button>
               </span>
             )}
             {filters.platform !== 'all' && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-900/50 text-green-400 border border-green-700/50">
                 Platform: {PLATFORM_CONFIGS[filters.platform]?.name || filters.platform}
                 <button 
                   onClick={() => updateFilter('platform', 'all')}
-                  className="ml-1 text-green-600 hover:text-green-800"
+                  className="ml-1 text-green-300 hover:text-green-100"
                 >
                   ×
                 </button>
               </span>
             )}
             {filters.dateRange !== 'all' && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-900/50 text-purple-400 border border-purple-700/50">
                 Date: {filters.dateRange}
                 <button 
                   onClick={() => updateFilter('dateRange', 'all')}
-                  className="ml-1 text-purple-600 hover:text-purple-800"
+                  className="ml-1 text-purple-300 hover:text-purple-100"
                 >
                   ×
                 </button>
               </span>
             )}
             {filters.search && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-900/50 text-yellow-400 border border-yellow-700/50">
                 Search: &quot;{filters.search}&quot;
                 <button 
                   onClick={() => updateFilter('search', '')}
-                  className="ml-1 text-yellow-600 hover:text-yellow-800"
+                  className="ml-1 text-yellow-300 hover:text-yellow-100"
                 >
                   ×
                 </button>

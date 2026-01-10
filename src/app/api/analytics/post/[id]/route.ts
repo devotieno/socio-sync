@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
 
 export async function GET(
   request: NextRequest,
@@ -17,81 +15,81 @@ export async function GET(
 
     const { id: postId } = await params;
     
-    // Get post data
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
+    // Use Firebase Admin SDK
+    const admin = await import('firebase-admin');
     
-    if (!postSnap.exists()) {
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
+
+    const db = admin.firestore();
+
+    // Fetch post data
+    const postDoc = await db.collection('posts').doc(postId).get();
+    
+    if (!postDoc.exists) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
+
+    const postData = postDoc.data();
     
-    const postData = postSnap.data();
-    if (postData.userId !== session.user.id) {
+    // Check if post belongs to user
+    if (postData?.userId !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // For now, return mock analytics data
-    // In a real implementation, you would fetch from social media APIs
-    const mockAnalytics = {
-      id: postId,
-      totalEngagement: Math.floor(Math.random() * 1000),
-      likes: Math.floor(Math.random() * 500),
-      shares: Math.floor(Math.random() * 100),
-      comments: Math.floor(Math.random() * 50),
-      views: Math.floor(Math.random() * 5000),
-      clickThroughRate: (Math.random() * 5).toFixed(2),
-      engagementRate: (Math.random() * 10).toFixed(2),
-      platformMetrics: {
-        twitter: {
-          likes: Math.floor(Math.random() * 200),
-          retweets: Math.floor(Math.random() * 50),
-          replies: Math.floor(Math.random() * 25),
-          views: Math.floor(Math.random() * 2000),
+    // Fetch analytics data from Firestore
+    const analyticsDoc = await db.collection('postAnalytics').doc(postId).get();
+    
+    if (!analyticsDoc.exists) {
+      // Return zero analytics if not found yet
+      return NextResponse.json({
+        success: true,
+        analytics: {
+          postId,
+          platform: postData?.platforms?.[0] || 'twitter',
+          likes: 0,
+          retweets: 0,
+          replies: 0,
+          quotes: 0,
+          bookmarks: 0,
+          impressions: 0,
+          urlClicks: 0,
+          userProfileClicks: 0,
+          fetchedAt: null,
         },
-        facebook: {
-          likes: Math.floor(Math.random() * 150),
-          shares: Math.floor(Math.random() * 30),
-          comments: Math.floor(Math.random() * 20),
-          views: Math.floor(Math.random() * 1500),
+        post: {
+          id: postId,
+          content: postData?.content || '',
+          status: postData?.status || 'published',
+          createdAt: postData?.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          publishedAt: postData?.publishedAt?.toDate?.()?.toISOString() || null,
         },
-      },
-      timeSeriesData: Array.from({ length: 7 }, (_, i) => ({
-        date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        engagement: Math.floor(Math.random() * 100),
-        views: Math.floor(Math.random() * 500),
-      })),
-      topPerformingTime: '2:00 PM - 4:00 PM',
-      audienceDemographics: {
-        ageGroups: {
-          '18-24': 25,
-          '25-34': 35,
-          '35-44': 25,
-          '45-54': 10,
-          '55+': 5,
-        },
-        gender: {
-          male: 45,
-          female: 52,
-          other: 3,
-        },
-        topCountries: [
-          { country: 'United States', percentage: 45 },
-          { country: 'United Kingdom', percentage: 15 },
-          { country: 'Canada', percentage: 12 },
-          { country: 'Australia', percentage: 8 },
-          { country: 'Germany', percentage: 7 },
-        ],
-      },
-    };
+      });
+    }
+
+    const analyticsData = analyticsDoc.data();
     
     return NextResponse.json({
       success: true,
-      analytics: mockAnalytics,
+      analytics: {
+        ...analyticsData,
+        fetchedAt: analyticsData?.fetchedAt?.toDate?.()?.toISOString() || null,
+        createdAt: analyticsData?.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        updatedAt: analyticsData?.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      },
       post: {
-        id: postSnap.id,
-        ...postData,
-        createdAt: postData.createdAt?.toDate?.()?.toISOString() || postData.createdAt,
-        publishedAt: postData.publishedAt?.toDate?.()?.toISOString() || postData.publishedAt,
+        id: postId,
+        content: postData?.content || '',
+        status: postData?.status || 'published',
+        createdAt: postData?.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        publishedAt: postData?.publishedAt?.toDate?.()?.toISOString() || null,
       },
     });
 

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TwitterApi } from 'twitter-api-v2';
-import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { codeVerifierStore } from '@/lib/twitter-link-store';
 
 export async function GET(request: NextRequest) {
@@ -70,12 +68,40 @@ export async function GET(request: NextRequest) {
       'user.fields': ['id', 'name', 'username', 'profile_image_url', 'public_metrics'],
     });
 
-    // Save Twitter account to existing user
-    const userDocRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(userDocRef);
+    // Use Firebase Admin SDK to save Twitter account
+    const admin = await import('firebase-admin');
     
-    const userData = userDoc.data() || {};
-    const connectedAccounts = userData.connectedAccounts || [];
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
+
+    const db = admin.firestore();
+    const userDocRef = db.collection('users').doc(userId);
+    const userDoc = await userDocRef.get();
+    
+    let userData: any = {};
+    let connectedAccounts: any[] = [];
+    
+    if (userDoc.exists) {
+      userData = userDoc.data();
+      connectedAccounts = userData?.connectedAccounts || [];
+    } else {
+      // Create user document if it doesn't exist
+      const newUserData = {
+        id: userId,
+        connectedAccounts: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      await userDocRef.set(newUserData);
+      userData = newUserData;
+    }
     
     // Check if this Twitter account is already connected
     const existingTwitterAccount = connectedAccounts.find(
@@ -114,8 +140,8 @@ export async function GET(request: NextRequest) {
     
     filteredAccounts.push(twitterAccount);
     
-    // Update user document
-    await setDoc(userDocRef, {
+    // Update user document using Admin SDK
+    await userDocRef.set({
       ...userData,
       connectedAccounts: filteredAccounts,
     }, { merge: true });

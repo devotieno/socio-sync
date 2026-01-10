@@ -137,10 +137,10 @@ export default function CreatePostPage() {
 
   if (status === 'loading' || isLoadingAccounts) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+          <p className="mt-4 text-slate-400">Loading...</p>
         </div>
       </div>
     );
@@ -151,47 +151,45 @@ export default function CreatePostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.back()}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <h1 className="text-2xl font-bold text-gray-900">Create New Post</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">
-                {connectedAccounts.length} account{connectedAccounts.length !== 1 ? 's' : ''} connected
-              </span>
-            </div>
+      <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => router.back()}
+              className="text-slate-400 hover:text-white transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h1 className="text-2xl font-outfit font-bold text-white">Create New Post</h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-slate-400">
+              {connectedAccounts.length} account{connectedAccounts.length !== 1 ? 's' : ''} connected
+            </span>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {connectedAccounts.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl text-center py-12">
             <div className="text-6xl mb-4">🔗</div>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">
-              No Social Accounts Connected
+            <h3 className="text-xl font-outfit font-medium text-white mb-2">
+              No Twitter/X Accounts Connected
             </h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              You need to connect at least one social media account before you can create posts.
+            <p className="text-slate-400 mb-6 max-w-md mx-auto">
+              You need to connect at least one Twitter/X account before you can create posts.
             </p>
             <button
               onClick={() => router.push('/dashboard/accounts')}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 bg-white text-black rounded-lg font-semibold hover:shadow-xl hover:shadow-white/20 hover:scale-105 transition-all"
             >
-              Connect Social Accounts
+              Connect Twitter/X Account
             </button>
           </div>
         ) : (
@@ -204,16 +202,14 @@ export default function CreatePostPage() {
       </div>
 
       {/* Footer */}
-      <div className="bg-white border-t mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-center items-center space-x-6 text-sm text-gray-500">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>All systems operational</span>
-            </div>
-            <div>•</div>
-            <div>SocioSync v1.0</div>
+      <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl mt-12 px-6 py-6">
+        <div className="flex justify-center items-center space-x-6 text-sm text-slate-400">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            <span>All systems operational</span>
           </div>
+          <div>•</div>
+          <div>Xync v1.0</div>
         </div>
       </div>
     </div>

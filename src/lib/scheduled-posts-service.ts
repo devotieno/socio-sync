@@ -2,9 +2,10 @@
 class ScheduledPostsService {
   private intervalId: NodeJS.Timeout | null = null;
   private isRunning = false;
-  private checkInterval = 60000; // Start with 60 seconds
-  private maxInterval = 300000; // Max 5 minutes
+  private checkInterval = 300000; // Start with 5 minutes for development
+  private maxInterval = 600000; // Max 10 minutes
   private rateLimitCount = 0;
+  private firebaseErrorCount = 0;
 
   start() {
     if (this.isRunning) return;
@@ -57,13 +58,30 @@ class ScheduledPostsService {
         const errorText = await response.text();
         console.error('Failed to process scheduled posts:', response.status, errorText);
         
-        // If we get permission errors, back off more aggressively
-        if (response.status === 403 || response.status === 401 || errorText.includes('permission')) {
-          this.checkInterval = Math.min(this.checkInterval * 2, 300000); // Max 5 minutes
-          console.log(`Permission error detected, backing off to ${this.checkInterval}ms intervals`);
+        // If we get Firebase permission errors, back off significantly
+        if (response.status === 500 && errorText.includes('permission')) {
+          this.firebaseErrorCount++;
+          this.checkInterval = Math.min(this.checkInterval * 2, this.maxInterval);
+          console.log(`Firebase permission error #${this.firebaseErrorCount}, backing off to ${this.checkInterval}ms intervals`);
+          
+          // After 3 consecutive Firebase errors, stop trying for development
+          if (this.firebaseErrorCount >= 3) {
+            console.log('Too many Firebase permission errors. Pausing scheduled posts service for development.');
+            this.stop();
+            return;
+          }
+        }
+        
+        // If we get API rate limit errors, back off more gently
+        if (response.status === 403 || response.status === 401) {
+          this.checkInterval = Math.min(this.checkInterval * 1.5, this.maxInterval);
+          console.log(`API permission error detected, backing off to ${this.checkInterval}ms intervals`);
         }
         return;
       }
+
+      // Reset error count on success
+      this.firebaseErrorCount = 0;
 
       const result = await response.json();
       

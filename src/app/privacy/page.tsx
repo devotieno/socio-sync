@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Social Media Hub',
-  description: 'Privacy Policy for Social Media Posting Hub'
+  title: 'Privacy Policy - Xync',
+  description: 'Privacy Policy for Xync - Twitter/X Management Platform'
 }
 
 export default function PrivacyPolicy() {
@@ -20,12 +20,12 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Information We Collect</h2>
               <p className="text-gray-700 mb-4">
-                When you use our Social Media Posting Hub, we collect information to provide and improve our services:
+                When you use Xync, we collect information to provide and improve our Twitter/X management services:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Account information (email, name) when you sign up</li>
-                <li>Social media account connections and access tokens</li>
-                <li>Content you create and schedule for posting</li>
+                <li>Twitter/X account connections and access tokens</li>
+                <li>Tweets you create and schedule for posting</li>
                 <li>Usage data and analytics to improve our service</li>
               </ul>
             </section>
@@ -33,26 +33,25 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">2. How We Use Your Information</h2>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>To post content to your connected social media accounts</li>
-                <li>To provide analytics and insights about your posts</li>
+                <li>To post tweets to your connected Twitter/X accounts</li>
+                <li>To provide analytics and insights about your tweets</li>
                 <li>To improve our service and develop new features</li>
                 <li>To communicate with you about your account and our services</li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">3. Data Sharing and Social Media APIs</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">3. Data Sharing and Twitter/X API</h2>
               <p className="text-gray-700 mb-4">
-                We connect to social media platforms on your behalf using their official APIs:
+                We connect to Twitter/X on your behalf using their official API:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li><strong>Facebook & Instagram:</strong> We access your pages and business accounts to post content you create</li>
-                <li><strong>LinkedIn:</strong> We access your profile and company pages for posting</li>
-                <li><strong>Twitter/X:</strong> We post tweets and media on your behalf</li>
-                <li><strong>Other platforms:</strong> Similar posting and analytics access</li>
+                <li><strong>Twitter/X:</strong> We access your account to post tweets and media on your behalf</li>
+                <li><strong>Analytics:</strong> We retrieve engagement data for your tweets to provide insights</li>
+                <li><strong>Account Management:</strong> We access basic profile information to manage your connections</li>
               </ul>
               <p className="text-gray-700 mt-4">
-                We only access the minimum permissions required for posting and analytics. We do not store your social media passwords.
+                We only access the minimum permissions required for posting and analytics. We do not store your Twitter/X password.
               </p>
             </section>
 
@@ -69,7 +68,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">5. Your Rights and Data Control</h2>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>You can disconnect social media accounts at any time</li>
+                <li>You can disconnect Twitter/X accounts at any time</li>
                 <li>You can delete your account and all associated data</li>
                 <li>You can request a copy of your data</li>
                 <li>You can update your information at any time</li>

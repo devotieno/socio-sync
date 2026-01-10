@@ -1,25 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-
-interface PostData {
-  id: string;
-  userId: string;
-  status: string;
-  content: string;
-  selectedAccounts?: Array<{
-    platform: string;
-    accountId: string;
-  }>;
-  analytics?: {
-    totalEngagement?: number;
-    impressions?: number;
-  };
-  createdAt: unknown;
-  [key: string]: unknown;
-}
 
 export async function GET() {
   try {
@@ -29,110 +10,125 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's posts
-    const postsRef = collection(db, 'posts');
-    const postsQuery = query(
-      postsRef,
-      where('userId', '==', session.user.id),
-      orderBy('createdAt', 'desc')
-    );
+    // Use Firebase Admin SDK
+    const admin = await import('firebase-admin');
     
-    const postsSnapshot = await getDocs(postsQuery);
-    const posts: PostData[] = postsSnapshot.docs.map(doc => ({
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
+
+    const db = admin.firestore();
+
+    // Fetch all posts for the user
+    const postsSnapshot = await db
+      .collection('posts')
+      .where('userId', '==', session.user.id)
+      .get();
+
+    const posts = postsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    } as PostData));
+    }));
 
     // Calculate analytics
     const totalPosts = posts.length;
-    const publishedPosts = posts.filter(post => post.status === 'published').length;
-    const scheduledPosts = posts.filter(post => post.status === 'scheduled').length;
-    const draftPosts = posts.filter(post => post.status === 'draft').length;
+    const publishedPosts = posts.filter((p: any) => p.status === 'published').length;
+    const scheduledPosts = posts.filter((p: any) => p.status === 'scheduled').length;
+    const draftPosts = posts.filter((p: any) => p.status === 'draft').length;
 
-    // Platform breakdown
-    const platformStats = posts.reduce((acc, post) => {
-      if (post.selectedAccounts) {
-        post.selectedAccounts.forEach((account: { platform: string; accountId: string }) => {
-          const platform = account.platform;
-          if (!acc[platform]) {
-            acc[platform] = { posts: 0, engagement: 0 };
-          }
-          acc[platform].posts += 1;
-          
-          // Add mock engagement data (in real app, this would come from social APIs)
-          if (post.analytics) {
-            acc[platform].engagement += post.analytics.totalEngagement || 0;
-          }
-        });
-      }
-      return acc;
-    }, {} as Record<string, { posts: number; engagement: number }>);
+    // Fetch analytics data from Firestore
+    const analyticsSnapshot = await db
+      .collection('postAnalytics')
+      .where('userId', '==', session.user.id)
+      .get();
 
-    // Recent activity (last 30 days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const recentPosts = posts.filter(post => {
-      const createdAt = post.createdAt;
-      let postDate: Date;
-      
-      if (createdAt && typeof createdAt === 'object' && 'toDate' in createdAt) {
-        // Firebase Timestamp
-        const firebaseTimestamp = createdAt as { toDate: () => Date };
-        postDate = firebaseTimestamp.toDate();
-      } else {
-        // String or Date
-        postDate = new Date(createdAt as string | Date);
-      }
-      
-      return postDate >= thirtyDaysAgo;
+    const analyticsData = analyticsSnapshot.docs.map(doc => doc.data());
+
+    // Calculate engagement metrics
+    let totalEngagement = 0;
+    let totalImpressions = 0;
+    let postsWithAnalytics = 0;
+
+    analyticsData.forEach((analytics: any) => {
+      const engagement = (analytics.likes || 0) + (analytics.retweets || 0) + 
+                        (analytics.replies || 0) + (analytics.bookmarks || 0);
+      totalEngagement += engagement;
+      totalImpressions += analytics.impressions || 0;
+      if (analytics.impressions > 0) postsWithAnalytics++;
     });
 
-    // Mock engagement metrics (in real app, fetch from social APIs)
-    const totalEngagement = posts.reduce((sum, post) => {
-      return sum + (post.analytics?.totalEngagement || Math.floor(Math.random() * 100));
-    }, 0);
+    const averageEngagement = postsWithAnalytics > 0 
+      ? ((totalEngagement / totalImpressions) * 100) 
+      : 0;
 
-    const totalImpressions = posts.reduce((sum, post) => {
-      return sum + (post.analytics?.impressions || Math.floor(Math.random() * 1000));
-    }, 0);
+    // Find top performing post
+    const topPost = analyticsData
+      .map((analytics: any) => {
+        const engagement = (analytics.likes || 0) + (analytics.retweets || 0) + 
+                          (analytics.replies || 0) + (analytics.bookmarks || 0);
+        const engagementRate = analytics.impressions > 0 
+          ? (engagement / analytics.impressions) * 100 
+          : 0;
+        return {
+          ...analytics,
+          totalEngagement: engagement,
+          engagementRate
+        };
+      })
+      .sort((a: any, b: any) => b.engagementRate - a.engagementRate)[0];
 
-    const analytics = {
-      overview: {
-        totalPosts,
-        publishedPosts,
-        scheduledPosts,
-        draftPosts,
-        totalEngagement,
-        totalImpressions,
-        averageEngagement: totalPosts > 0 ? Math.round(totalEngagement / totalPosts) : 0
-      },
-      platformBreakdown: Object.entries(platformStats).map(([platform, stats]) => ({
-        platform,
-        posts: stats.posts,
-        engagement: stats.engagement
-      })),
-      recentActivity: {
-        postsLast30Days: recentPosts.length,
-        engagementLast30Days: recentPosts.reduce((sum, post) => {
-          return sum + (post.analytics?.totalEngagement || Math.floor(Math.random() * 50));
-        }, 0)
-      },
-      topPerformingPosts: posts
-        .filter(post => post.status === 'published')
-        .map(post => ({
-          id: post.id,
-          content: post.content.substring(0, 100) + (post.content.length > 100 ? '...' : ''),
-          platform: post.selectedAccounts?.[0]?.platform || 'unknown',
-          engagement: post.analytics?.totalEngagement || Math.floor(Math.random() * 200),
-          impressions: post.analytics?.impressions || Math.floor(Math.random() * 2000),
-          createdAt: post.createdAt
-        }))
-        .sort((a, b) => b.engagement - a.engagement)
-        .slice(0, 5)
+    // Get post content for top post
+    let topPostData = null;
+    if (topPost) {
+      const postDoc = await db.collection('posts').doc(topPost.postId).get();
+      if (postDoc.exists) {
+        topPostData = {
+          id: postDoc.id,
+          content: postDoc.data()?.content || '',
+          engagement: topPost.engagementRate,
+          impressions: topPost.impressions || 0,
+          createdAt: postDoc.data()?.createdAt?.toDate?.()?.toISOString() || new Date().toISOString()
+        };
+      }
+    }
+
+    // Platform breakdown
+    const platformCounts: { [key: string]: number } = {};
+    posts.forEach((post: any) => {
+      if (post.platforms && Array.isArray(post.platforms)) {
+        post.platforms.forEach((platform: string) => {
+          platformCounts[platform] = (platformCounts[platform] || 0) + 1;
+        });
+      }
+    });
+
+    const platformBreakdown = Object.entries(platformCounts).map(([platform, count]) => ({
+      platform,
+      count,
+      percentage: totalPosts > 0 ? Math.round((count / totalPosts) * 100) : 0
+    }));
+
+    const analyticsResponse = {
+      totalPosts,
+      publishedPosts,
+      scheduledPosts,
+      draftPosts,
+      platformBreakdown,
+      totalEngagement,
+      totalImpressions,
+      averageEngagement: Math.round(averageEngagement * 10) / 10,
+      engagementGrowth: 0, // Would need historical data to calculate
+      topPosts: topPostData ? [topPostData] : []
     };
 
-    return NextResponse.json(analytics);
+    return NextResponse.json(analyticsResponse);
+
   } catch (error) {
     console.error('Analytics overview error:', error);
     return NextResponse.json(

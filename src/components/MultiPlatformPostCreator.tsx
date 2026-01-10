@@ -30,25 +30,35 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
   const platforms = Object.values(PLATFORM_CONFIGS);
 
   useEffect(() => {
-    // Load connected accounts
-    const savedAccounts = localStorage.getItem('connectedAccounts');
-    if (savedAccounts) {
+    // Load connected accounts from API
+    const fetchConnectedAccounts = async () => {
       try {
-        const accounts = JSON.parse(savedAccounts);
-        setConnectedAccounts(accounts);
-        
-        // Initialize platform posts for connected accounts
-        const initialPosts = accounts.map((account: any) => ({
-          platform: account.platform,
-          content: baseContent,
-          enabled: true,
-        }));
-        setPlatformPosts(initialPosts);
+        const response = await fetch('/api/social-accounts');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched social accounts:', data);
+          
+          // Extract actual connected accounts from the response
+          const connected = data.accounts || [];
+          setConnectedAccounts(connected);
+          
+          // Initialize platform posts for connected accounts
+          if (connected.length > 0) {
+            const initialPosts = connected.map((account: any) => ({
+              platform: account.platform,
+              content: baseContent,
+              enabled: true,
+            }));
+            setPlatformPosts(initialPosts);
+          }
+        }
       } catch (error) {
         console.error('Failed to load connected accounts:', error);
       }
-    }
-  }, [baseContent]);
+    };
+
+    fetchConnectedAccounts();
+  }, []);
 
   const updatePlatformContent = (platform: string, content: string) => {
     setPlatformPosts(prev => prev.map(post => 

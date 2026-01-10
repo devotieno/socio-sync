@@ -9,7 +9,6 @@ import { PostCard } from '@/components/PostCard';
 import { PostFilters } from '@/components/PostFilters';
 import { PostDetailsModal } from '@/components/PostDetailsModal';
 import { BulkActions } from '@/components/BulkActions';
-import { RateLimitDisplay } from '@/components/RateLimitDisplay';
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
 
 export default function PostsPage() {
@@ -378,97 +377,63 @@ export default function PostsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">Posts Management</h1>
-              <span className="text-sm text-gray-500">
-                {filteredPosts.length} of {posts.length} post{posts.length !== 1 ? 's' : ''}
-              </span>
-              
-              {/* View Mode Toggle */}
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('posts')}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                    viewMode === 'posts'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Posts
-                </button>
-                <button
-                  onClick={() => setViewMode('analytics')}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                    viewMode === 'analytics'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Analytics
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              {/* Debug button (temporary) */}
+      <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-outfit font-bold text-white">X Posts Management</h1>
+            <span className="text-sm text-slate-400">
+              {filteredPosts.length} of {posts.length} post{posts.length !== 1 ? 's' : ''}
+            </span>
+            
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-slate-900/50 rounded-lg p-1">
               <button
-                onClick={testSession}
-                className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                onClick={() => setViewMode('posts')}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'posts'
+                    ? 'bg-slate-700 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
-                Debug Session
+                X Posts
               </button>
-              
-              {/* API Health Check button (temporary) */}
               <button
-                onClick={testApiHealth}
-                className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                onClick={() => setViewMode('analytics')}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'analytics'
+                    ? 'bg-slate-700 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
-                API Health Check
+                X Analytics
               </button>
-              
-              {/* Bulk selection toggle */}
-              {filteredPosts.length > 0 && (
-                <label className="flex items-center space-x-2 text-sm text-gray-600">
-                  <input
-                    type="checkbox"
-                    checked={selectedPosts.length === filteredPosts.length && filteredPosts.length > 0}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span>Select all</span>
-                </label>
-              )}
-              
-              {/* Debug buttons (remove in production) */}
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={testApiHealth}
-                  className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
-                >
-                  Test API
-                </button>
-                <button
-                  onClick={testSession}
-                  className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors"
-                >
-                  Test Session
-                </button>
-              </div>
-              
-              <Link
-                href="/dashboard/posts/create"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Create Post</span>
-              </Link>
             </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            {/* Bulk selection toggle */}
+            {filteredPosts.length > 0 && (
+              <label className="flex items-center space-x-2 text-sm text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={selectedPosts.length === filteredPosts.length && filteredPosts.length > 0}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="rounded border-slate-600 bg-slate-700 text-white focus:ring-white"
+                />
+                <span>Select all</span>
+              </label>
+            )}
+              
+            <Link
+              href="/dashboard/posts/create"
+              className="px-4 py-2 bg-white text-black rounded-lg font-semibold hover:shadow-xl hover:shadow-white/20 hover:scale-105 transition-all flex items-center space-x-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Create X Post</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -483,20 +448,15 @@ export default function PostsPage() {
       )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {viewMode === 'analytics' ? (
           /* Analytics View */
           <AnalyticsDashboard posts={posts} />
         ) : (
           /* Posts View */
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <RateLimitDisplay className="sticky top-4" />
-            </div>
-            
+          <div>
             {/* Posts Content */}
-            <div className="lg:col-span-3">
+            <div>
               {/* Bulk Actions */}
               <BulkActions
                 selectedPosts={selectedPosts}
@@ -506,30 +466,30 @@ export default function PostsPage() {
               />
 
               {isLoading ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading posts...</p>
+                <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+                  <p className="mt-4 text-slate-400">Loading X posts...</p>
                 </div>
               ) : filteredPosts.length === 0 ? (
-                <div className="text-center py-12">
+                <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl text-center py-12">
                   <div className="text-6xl mb-4">
                     {posts.length === 0 ? '📝' : '🔍'}
                   </div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">
-                    {posts.length === 0 ? 'No Posts Yet' : 'No Posts Found'}
+                  <h3 className="text-xl font-outfit font-medium text-white mb-2">
+                    {posts.length === 0 ? 'No X Posts Yet' : 'No X Posts Found'}
                   </h3>
-                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                  <p className="text-slate-400 mb-6 max-w-md mx-auto">
                     {posts.length === 0 
-                      ? 'Create your first post to start sharing content across your social media platforms.'
+                      ? 'Create your first post to start sharing content on Twitter/X.'
                       : 'Try adjusting your filters to find the posts you\'re looking for.'
                     }
                   </p>
                   {posts.length === 0 ? (
                     <Link
                       href="/dashboard/posts/create"
-                      className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      className="px-6 py-3 bg-white text-black rounded-lg font-semibold hover:shadow-xl hover:shadow-white/20 hover:scale-105 transition-all inline-block"
                     >
-                      Create Your First Post
+                      Create Your First X Post
                     </Link>
                   ) : (
                     <button
@@ -544,7 +504,7 @@ export default function PostsPage() {
                         author: 'all',
                         hasAnalytics: 'all'
                       })}
-                      className="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                      className="px-6 py-3 bg-slate-700 text-white rounded-lg font-semibold hover:bg-slate-600 transition-colors"
                     >
                       Clear All Filters
                     </button>
@@ -561,7 +521,7 @@ export default function PostsPage() {
                             type="checkbox"
                             checked={selectedPosts.includes(post.id!)}
                             onChange={(e) => handlePostSelect(post.id!, e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-slate-600 bg-slate-700 text-white focus:ring-white"
                           />
                         </label>
                       </div>

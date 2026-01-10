@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { db, storage } from '@/lib/firebase';
-import { collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { SocialMediaPost, MediaFile } from '@/types/post';
 import { publishToSocialMedia } from '@/lib/social-media-publisher';
 
@@ -28,6 +25,23 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Use Firebase Admin SDK
+    const admin = await import('firebase-admin');
+    
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      });
+    }
+
+    const db = admin.firestore();
+    const storage = admin.storage();
+
     // Handle media file uploads
     const mediaFiles: MediaFile[] = [];
     const uploadedFiles = formData.getAll('mediaFiles') as File[];
@@ -38,20 +52,23 @@ export async function POST(request: NextRequest) {
       if (file && file.size > 0) {
         try {
           console.log(`Uploading file: ${file.name}, size: ${file.size}`);
-          console.log(`User ID: ${session.user.id}`);
-          console.log(`Session:`, { 
-            userId: session.user.id, 
-            email: session.user.email,
-            name: session.user.name 
+          
+          // Upload to Firebase Storage using Admin SDK
+          const fileName = `posts/${session.user.id}/${Date.now()}-${file.name}`;
+          const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+          const bucket = storage.bucket(bucketName);
+          const fileBuffer = Buffer.from(await file.arrayBuffer());
+          const fileRef = bucket.file(fileName);
+          
+          await fileRef.save(fileBuffer, {
+            metadata: {
+              contentType: file.type,
+            },
           });
           
-          // Upload to Firebase Storage
-          const fileName = `posts/${session.user.id}/${Date.now()}-${file.name}`;
-          console.log(`Storage path: ${fileName}`);
-          
-          const storageRef = ref(storage, fileName);
-          const snapshot = await uploadBytes(storageRef, file);
-          const downloadURL = await getDownloadURL(snapshot.ref);
+          // Make file publicly accessible
+          await fileRef.makePublic();
+          const downloadURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
           console.log(`File uploaded successfully: ${downloadURL}`);
 
@@ -64,11 +81,6 @@ export async function POST(request: NextRequest) {
           });
         } catch (uploadError) {
           console.error('Error uploading file:', uploadError);
-          console.error('Upload error details:', {
-            code: (uploadError as any)?.code,
-            message: (uploadError as any)?.message,
-            customData: (uploadError as any)?.customData,
-          });
           mediaUploadErrors.push(`Failed to upload ${file.name}: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`);
         }
       }
@@ -103,8 +115,8 @@ export async function POST(request: NextRequest) {
       ...(publishNow ? { publishedAt: new Date() } : { scheduledAt: new Date(scheduledAt) }),
     };
 
-    // Save to Firestore
-    const docRef = await addDoc(collection(db, 'posts'), postData);
+    // Save to Firestore using Admin SDK
+    const docRef = await db.collection('posts').add(postData);
 
     // If publishing now, trigger immediate posting
     if (publishNow) {
@@ -113,7 +125,7 @@ export async function POST(request: NextRequest) {
       } catch (publishError) {
         console.error('Error publishing to social media:', publishError);
         // Update post status to failed
-        await updateDoc(doc(db, 'posts', docRef.id), {
+        await db.collection('posts').doc(docRef.id).update({
           status: 'failed',
           updatedAt: new Date(),
         });
@@ -135,7 +147,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json({ 
-      error: 'Internal server error' 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
@@ -153,13 +166,27 @@ export async function GET(request: NextRequest) {
     const platform = searchParams.get('platform');
     const limitParam = parseInt(searchParams.get('limit') || '50');
 
-    // Build base query - only filter by userId to avoid index issues
-    let q = query(
-      collection(db, 'posts'),
-      where('userId', '==', session.user.id)
-    );
+    // Use Firebase Admin SDK
+    const admin = await import('firebase-admin');
+    
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
 
-    const querySnapshot = await getDocs(q);
+    const db = admin.firestore();
+
+    // Build query using Admin SDK
+    const querySnapshot = await db
+      .collection('posts')
+      .where('userId', '==', session.user.id)
+      .get();
+
     let posts = querySnapshot.docs.map(doc => {
       const data = doc.data();
       return {
@@ -172,7 +199,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Apply filters in memory for now
+    // Apply filters in memory
     if (status) {
       posts = posts.filter((post: any) => post.status === status);
     }

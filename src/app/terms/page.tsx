@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - Social Media Hub',
-  description: 'Terms of Service for Social Media Posting Hub'
+  title: 'Terms of Service - Xync',
+  description: 'Terms of Service for Xync - Twitter/X Management Platform'
 }
 
 export default function TermsOfService() {
@@ -20,7 +20,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-700 mb-4">
-                By using Social Media Posting Hub ("the Service"), you agree to be bound by these Terms of Service. 
+                By using Xync ("the Service"), you agree to be bound by these Terms of Service. 
                 If you do not agree to these terms, please do not use our service.
               </p>
             </section>
@@ -28,13 +28,13 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">2. Description of Service</h2>
               <p className="text-gray-700 mb-4">
-                Social Media Posting Hub is a platform that allows you to:
+                Xync is a Twitter/X management platform that allows you to:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>Connect multiple social media accounts</li>
-                <li>Create and schedule posts across platforms</li>
-                <li>Manage your social media content from a unified dashboard</li>
-                <li>View analytics and insights about your posts</li>
+                <li>Connect multiple Twitter/X accounts</li>
+                <li>Create and schedule tweets across accounts</li>
+                <li>Manage your Twitter/X content from a unified dashboard</li>
+                <li>View analytics and insights about your tweets</li>
               </ul>
             </section>
 
@@ -52,28 +52,28 @@ export default function TermsOfService() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">4. Social Media Platform Compliance</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">4. Twitter/X Platform Compliance</h2>
               <p className="text-gray-700 mb-4">
-                When using our service, you must comply with the terms and policies of each social media platform:
+                When using our service, you must comply with Twitter/X's terms and policies:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>Facebook Terms of Service and Community Standards</li>
-                <li>Instagram Terms of Use and Community Guidelines</li>
-                <li>LinkedIn User Agreement and Professional Community Policies</li>
-                <li>Twitter/X Terms of Service and Rules</li>
-                <li>All other connected platform policies</li>
+                <li>Twitter/X Terms of Service</li>
+                <li>Twitter/X Rules and Policies</li>
+                <li>Twitter/X Automation Rules</li>
+                <li>Twitter/X API Terms</li>
+                <li>All other Twitter/X platform policies</li>
               </ul>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">5. Content Guidelines</h2>
-              <p className="text-gray-700 mb-4">You are responsible for all content you post through our service. Content must not:</p>
+              <p className="text-gray-700 mb-4">You are responsible for all tweets you post through our service. Content must not:</p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Violate any laws or regulations</li>
                 <li>Infringe on intellectual property rights</li>
                 <li>Contain harmful, offensive, or inappropriate material</li>
                 <li>Spread misinformation or false information</li>
-                <li>Violate platform-specific content policies</li>
+                <li>Violate Twitter/X content policies</li>
               </ul>
             </section>
 
@@ -82,8 +82,8 @@ export default function TermsOfService() {
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>We strive for 99% uptime but cannot guarantee uninterrupted service</li>
                 <li>Scheduled maintenance will be announced in advance</li>
-                <li>Social media platform API changes may affect functionality</li>
-                <li>We are not responsible for platform outages or policy changes</li>
+                <li>Twitter/X API changes may affect functionality</li>
+                <li>We are not responsible for Twitter/X platform outages or policy changes</li>
               </ul>
             </section>
 
@@ -93,8 +93,8 @@ export default function TermsOfService() {
                 Our service is provided "as is" without warranties. We are not liable for:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>Content posted through our platform</li>
-                <li>Social media platform policy violations</li>
+                <li>Tweets posted through our platform</li>
+                <li>Twitter/X policy violations</li>
                 <li>Account suspensions or restrictions</li>
                 <li>Data loss or technical issues</li>
                 <li>Business losses or damages</li>

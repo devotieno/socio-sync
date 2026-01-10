@@ -98,16 +98,16 @@ export default function PostCreator({ connectedAccounts, onSubmit, isLoading = f
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Create New Post</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="w-full max-w-2xl mx-auto backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20">
+      <div className="px-6 py-4 border-b border-slate-700/50">
+        <h2 className="text-xl font-outfit font-semibold text-white">Create New Post</h2>
+      </div>
+      <div className="p-6 space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <Alert className="border-red-500 text-red-700 bg-red-50">
+            <div className="border border-red-500/50 text-red-400 bg-red-950/30 rounded-lg p-4">
               {error}
-            </Alert>
+            </div>
           )}
 
           <PlatformSelector
@@ -117,7 +117,7 @@ export default function PostCreator({ connectedAccounts, onSubmit, isLoading = f
           />
 
           <div className="space-y-2">
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="content" className="block text-sm font-medium text-white">
               Post Content
             </label>
             <div className="relative">
@@ -126,7 +126,7 @@ export default function PostCreator({ connectedAccounts, onSubmit, isLoading = f
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="What's on your mind?"
-                className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 bg-slate-900/50 border border-slate-700/50 text-white placeholder-slate-500 rounded-lg resize-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all"
                 rows={4}
                 disabled={isLoading}
               />
@@ -141,7 +141,7 @@ export default function PostCreator({ connectedAccounts, onSubmit, isLoading = f
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Media Files (Optional)
             </label>
             <MediaUpload
@@ -154,27 +154,27 @@ export default function PostCreator({ connectedAccounts, onSubmit, isLoading = f
 
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2">
+              <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="radio"
                   name="publishTime"
                   checked={publishNow}
                   onChange={() => setPublishNow(true)}
                   disabled={isLoading}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="h-4 w-4 text-white focus:ring-white/20 border-slate-600 bg-slate-900/50"
                 />
-                <span className="text-sm font-medium text-gray-700">Publish Now</span>
+                <span className="text-sm font-medium text-white">Publish Now</span>
               </label>
-              <label className="flex items-center space-x-2">
+              <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="radio"
                   name="publishTime"
                   checked={!publishNow}
                   onChange={() => setPublishNow(false)}
                   disabled={isLoading}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="h-4 w-4 text-white focus:ring-white/20 border-slate-600 bg-slate-900/50"
                 />
-                <span className="text-sm font-medium text-gray-700">Schedule for Later</span>
+                <span className="text-sm font-medium text-white">Schedule for Later</span>
               </label>
             </div>
 
@@ -185,15 +185,15 @@ export default function PostCreator({ connectedAccounts, onSubmit, isLoading = f
             )}
           </div>
 
-          <Button
+          <button
             type="submit"
             disabled={isLoading || selectedAccounts.length === 0 || !content.trim()}
-            className="w-full"
+            className="w-full px-6 py-3 bg-white text-black rounded-lg font-semibold hover:shadow-xl hover:shadow-white/20 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
           >
             {isLoading ? 'Creating Post...' : publishNow ? 'Publish Now' : 'Schedule Post'}
-          </Button>
+          </button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

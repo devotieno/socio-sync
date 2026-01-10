@@ -57,31 +57,29 @@ export default function AccountsPage() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="py-10">
-        <header>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold leading-tight text-gray-900">
-              Connected Accounts
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Manage your social media accounts and connections
-            </p>
-          </div>
-        </header>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-outfit font-bold text-white">
+          Connected Accounts
+        </h1>
+        <p className="mt-2 text-slate-400">
+          Manage your Twitter/X account connections
+        </p>
+      </div>
 
-        <main>
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {notification && (
-              <div className="mb-6 mx-4 sm:mx-0">
-                <div className={`rounded-md p-4 ${
-                  notificationType === 'success' ? 'bg-green-50' : 'bg-red-50'
-                }`}>
+      <div>
+        {notification && (
+          <div className="mb-6">
+            <div className={`backdrop-blur-xl border rounded-xl p-4 ${
+              notificationType === 'success' 
+                ? 'bg-green-900/30 border-green-700' 
+                : 'bg-red-900/30 border-red-700'
+            }`}>
                   <div className="flex">
                     <div className="flex-shrink-0">
                       {notificationType === 'success' ? (
                         <svg
-                          className="h-5 w-5 text-green-400"
+                          className="h-5 w-5 text-green-300"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"
@@ -94,7 +92,7 @@ export default function AccountsPage() {
                         </svg>
                       ) : (
                         <svg
-                          className="h-5 w-5 text-red-400"
+                          className="h-5 w-5 text-red-300"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"
@@ -109,45 +107,43 @@ export default function AccountsPage() {
                     </div>
                     <div className="ml-3">
                       <p className={`text-sm font-medium ${
-                        notificationType === 'success' ? 'text-green-800' : 'text-red-800'
+                        notificationType === 'success' ? 'text-green-200' : 'text-red-200'
                       }`}>
                         {notification}
                       </p>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-6">
-              {/* Multi-Platform Manager */}
-              <MultiPlatformManager />
-
-              {/* Legacy Twitter Account Component (for backward compatibility) */}
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-6">
-                    Twitter Integration (Legacy)
-                  </h3>
-                  <TwitterAccount />
-                </div>
-              </div>
-
-              {/* Account Management Info */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                  Account Security
-                </h3>
-                <div className="text-sm text-blue-800 space-y-2">
-                  <p>• Your social media tokens are encrypted and stored securely</p>
-                  <p>• You can disconnect any account at any time</p>
-                  <p>• We only access your accounts to post content you create</p>
-                  <p>• All posting is done with your explicit permission</p>
-                </div>
-              </div>
             </div>
           </div>
-        </main>
+        )}
+
+        <div className="space-y-6">
+          {/* Multi-Platform Manager */}
+          <MultiPlatformManager />
+
+            {/* Legacy Twitter Account Component (for backward compatibility) */}
+          <div className="backdrop-blur-xl bg-slate-800/50 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20 overflow-hidden">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg font-outfit font-medium text-white mb-6">
+                Twitter Integration (Legacy)
+              </h3>
+              <TwitterAccount />
+            </div>
+          </div>
+
+          {/* Account Management Info */}
+          <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+            <h3 className="text-lg font-outfit font-semibold text-white mb-2">
+              Account Security
+            </h3>
+            <div className="text-sm text-slate-300 space-y-2">
+              <p>• Your Twitter/X tokens are encrypted and stored securely</p>
+              <p>• You can disconnect your account at any time</p>
+              <p>• We only access your account to post content you create</p>
+              <p>• All posting is done with your explicit permission</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -9,20 +9,34 @@ service cloud.firestore {
     
     // Users can only access their own posts
     match /posts/{postId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Allow read if user owns the post
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid
+      );
+      // Allow update/delete if user owns the post
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow create if the user is creating their own post
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
     
     // Users can only access their own social accounts
     match /socialAccounts/{accountId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Allow read if user owns the account
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow update/delete if user owns the account
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow create if creating for themselves
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
     
     // Users can only access their own analytics
     match /analytics/{analyticsId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Allow read if user owns the analytics
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow update/delete if user owns the analytics
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow create if creating for themselves
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
     
     // Allow reading of public platform information (for UI purposes)

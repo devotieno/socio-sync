@@ -1,4 +1,4 @@
-# SocioSync - Social Media Management Platform
+# Xync - Social Media Management Platform
 
 A comprehensive social media management platform built with Next.js, Firebase, and TypeScript. Schedule posts across multiple platforms, track analytics, and manage all your social media accounts from one dashboard.
 
