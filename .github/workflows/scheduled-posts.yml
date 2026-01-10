@@ -1,0 +1,20 @@
+name: Publish Scheduled Posts
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  publish-posts:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Scheduled Posts Endpoint
+        run: |
+          curl -X POST ${{ secrets.APP_URL }}/api/posts/publish-scheduled \
+            -H "Authorization: Bearer ${{ secrets.CRON_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            --fail-with-body \
+            --verbose
