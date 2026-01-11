@@ -1,8 +1,13 @@
+'use client';
+
+import { useState } from 'react';
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, SparklesIcon, ChartBarIcon, CalendarDaysIcon, RocketLaunchIcon, BoltIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import Logo from "@/components/Logo";
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-slate-800 relative overflow-hidden">
       {/* Animated Background Elements - Subtle Grey Glows */}
@@ -20,7 +25,9 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <Logo size={36} showText={true} />
             </div>
-            <div className="flex items-center gap-3">
+            
+            {/* Desktop Navigation */}
+            <div className="hidden sm:flex items-center gap-3">
               <Link
                 href="/auth/signin"
                 className="text-slate-300 hover:text-white font-medium px-4 py-2 rounded-lg hover:bg-slate-800/50 transition-all"
@@ -34,7 +41,57 @@ export default function Home() {
                 Get Started Free
               </Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="sm:hidden p-2 rounded-lg border border-slate-700/50 bg-slate-800/50 hover:bg-slate-700/50 transition-all"
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="w-6 h-6 text-slate-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {mobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
           </nav>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="sm:hidden mt-4 pb-4 space-y-2 border-t border-slate-800/50 pt-4">
+              <Link
+                href="/auth/signin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center text-slate-300 hover:text-white font-medium px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-all"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/auth/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center bg-white text-black px-6 py-3 rounded-lg hover:shadow-xl hover:shadow-white/20 transition-all font-semibold"
+              >
+                Get Started Free
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
