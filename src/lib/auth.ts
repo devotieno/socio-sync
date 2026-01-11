@@ -78,13 +78,32 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      // If user signs in with Twitter, trigger account setup
-      if (account?.provider === 'twitter') {
+      // Handle account linking for OAuth providers (Google, Twitter)
+      if (account?.provider === 'google' || account?.provider === 'twitter') {
         try {
-          // This will be handled after the session is created
-          console.log('Twitter sign-in detected, will set up account');
+          // Check if an account with this email already exists
+          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/link-account`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: user.email,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              accessToken: account.access_token,
+              refreshToken: account.refresh_token,
+            }),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            if (result.linked) {
+              console.log(`${account.provider} account linked to existing user`);
+              // Update user ID to match existing account
+              user.id = result.userId;
+            }
+          }
         } catch (error) {
-          console.error('Twitter setup error:', error);
+          console.error('Account linking error:', error);
         }
       }
       return true;

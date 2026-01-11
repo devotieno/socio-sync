@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       displayName: displayName || null,
       photoURL: user.photoURL || null,
+      linkedProviders: ['password'],
       createdAt: new Date(),
       updatedAt: new Date(),
     });

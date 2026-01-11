@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ScheduledPostsProvider from '@/components/ScheduledPostsProvider';
-import ScheduledPostsNotifications from '@/components/ScheduledPostsNotifications';
 
 export default function DashboardLayoutWrapper({
   children,
@@ -35,7 +34,6 @@ export default function DashboardLayoutWrapper({
   return (
     <ScheduledPostsProvider>
       <DashboardLayout>{children}</DashboardLayout>
-      <ScheduledPostsNotifications />
     </ScheduledPostsProvider>
   );
 }
