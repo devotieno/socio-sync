@@ -1,7 +1,7 @@
 {
-  "name": "𝕏ync - Social Media Management Platform",
+  "name": "𝕏ync - Twitter/X Management Platform",
   "short_name": "𝕏ync",
-  "description": "Manage all your social media accounts from one dashboard",
+  "description": "Schedule tweets and manage multiple Twitter/X accounts from one dashboard",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

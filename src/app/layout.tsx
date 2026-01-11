@@ -18,8 +18,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "𝕏ync - Social Media Management Platform",
-  description: "Manage all your social media accounts from one dashboard. Schedule posts, track analytics, and grow your online presence.",
+  title: "𝕏ync - Twitter/X Management Platform",
+  description: "Schedule tweets, manage multiple Twitter/X accounts, and track analytics from one powerful dashboard. Grow your Twitter/X presence effortlessly.",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
