@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - Xync',
-  description: 'Terms of Service for Xync - Twitter/X Management Platform'
+  title: 'Terms of Service - 𝕏ync',
+  description: 'Terms of Service for 𝕏ync - Twitter/X Management Platform'
 }
 
 export default function TermsOfService() {
@@ -20,7 +20,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-700 mb-4">
-                By using Xync ("the Service"), you agree to be bound by these Terms of Service. 
+                By using 𝕏ync ("the Service"), you agree to be bound by these Terms of Service. 
                 If you do not agree to these terms, please do not use our service.
               </p>
             </section>
@@ -28,7 +28,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">2. Description of Service</h2>
               <p className="text-gray-700 mb-4">
-                Xync is a Twitter/X management platform that allows you to:
+                𝕏ync is a Twitter/X management platform that allows you to:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Connect multiple Twitter/X accounts</li>

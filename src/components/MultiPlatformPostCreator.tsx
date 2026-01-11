@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { PLATFORM_CONFIGS } from '@/types/post';
+import { PLATFORM_CONFIGS, SocialMediaPost } from '@/types/post';
 import { PaperAirplaneIcon, CalendarIcon, PhotoIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 
 interface PlatformPostData {
@@ -17,9 +17,11 @@ interface PlatformPostData {
 
 interface MultiPlatformPostCreatorProps {
   onPostCreated?: (posts: PlatformPostData[]) => void;
+  existingPost?: SocialMediaPost;
+  isEditing?: boolean;
 }
 
-export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCreatorProps) {
+export function MultiPlatformPostCreator({ onPostCreated, existingPost, isEditing }: MultiPlatformPostCreatorProps) {
   const [baseContent, setBaseContent] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
@@ -60,6 +62,37 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
     fetchConnectedAccounts();
   }, []);
 
+  // Load existing post data when editing
+  useEffect(() => {
+    if (existingPost && isEditing) {
+      console.log('Loading existing post for editing:', existingPost);
+      setBaseContent(existingPost.content || '');
+      
+      if (existingPost.scheduledAt) {
+        const date = new Date(existingPost.scheduledAt);
+        setScheduledTime(date.toISOString().slice(0, 16));
+      }
+      
+      if (existingPost.mediaFiles && existingPost.mediaFiles.length > 0) {
+        // MediaFile is an object, extract the URL
+        const firstMedia = existingPost.mediaFiles[0];
+        if (typeof firstMedia === 'string') {
+          setMediaUrl(firstMedia);
+        } else if (firstMedia && typeof firstMedia === 'object' && 'url' in firstMedia) {
+          setMediaUrl(firstMedia.url);
+        }
+      }
+      
+      // Update platform posts with existing content
+      if (platformPosts.length > 0) {
+        setPlatformPosts(prev => prev.map(post => ({
+          ...post,
+          content: existingPost.content || '',
+        })));
+      }
+    }
+  }, [existingPost, isEditing, platformPosts.length]);
+
   const updatePlatformContent = (platform: string, content: string) => {
     setPlatformPosts(prev => prev.map(post => 
       post.platform === platform 
@@ -97,77 +130,99 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
 
   const createPosts = async () => {
     setIsPosting(true);
-    const enabledPosts = platformPosts.filter(post => post.enabled);
-    const results = [];
 
     try {
-      for (const post of enabledPosts) {
-        const account = connectedAccounts.find(acc => acc.platform === post.platform);
-        if (!account) continue;
+      if (isEditing && existingPost?.id) {
+        // Update existing post
+        const response = await fetch(`/api/posts/${existingPost.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: baseContent,
+            scheduledAt: scheduledTime ? new Date(scheduledTime) : null,
+            mediaFiles: mediaUrl ? [mediaUrl] : [],
+          }),
+        });
 
-        try {
-          const postData = {
-            content: post.content,
-            mediaUrl: mediaUrl || undefined,
-            scheduledTime: scheduledTime || undefined,
-            // Platform-specific data
-            ...(post.platform === 'facebook' && {
-              pageId: account.additionalData?.pageId,
-              pageAccessToken: account.additionalData?.pageAccessToken,
-            }),
-            ...(post.platform === 'instagram' && {
-              instagramAccountId: account.additionalData?.instagramAccountId,
-              mediaType: mediaUrl?.includes('.mp4') ? 'VIDEO' : 'IMAGE',
-            }),
-            ...(post.platform === 'linkedin' && {
-              authorId: account.additionalData?.authorId,
-              organizationId: account.additionalData?.organizationId,
-            }),
-          };
+        if (response.ok) {
+          onPostCreated?.([]);
+        } else {
+          const error = await response.json();
+          alert(`Error updating post: ${error.error || 'Unknown error'}`);
+        }
+      } else {
+        // Create new posts (existing logic)
+        const enabledPosts = platformPosts.filter(post => post.enabled);
+        const results = [];
 
-          const response = await fetch(`/api/${post.platform}/post`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...postData,
-              accessToken: account.accessToken,
-            }),
-          });
+        for (const post of enabledPosts) {
+          const account = connectedAccounts.find(acc => acc.platform === post.platform);
+          if (!account) continue;
 
-          const result = await response.json();
-          results.push({
-            platform: post.platform,
-            success: response.ok,
-            data: result,
-          });
-        } catch (error) {
-          console.error(`Failed to post to ${post.platform}:`, error);
-          results.push({
-            platform: post.platform,
-            success: false,
-            error: error,
-          });
+          try {
+            const postData = {
+              content: post.content,
+              mediaUrl: mediaUrl || undefined,
+              scheduledTime: scheduledTime || undefined,
+              // Platform-specific data
+              ...(post.platform === 'facebook' && {
+                pageId: account.additionalData?.pageId,
+                pageAccessToken: account.additionalData?.pageAccessToken,
+              }),
+              ...(post.platform === 'instagram' && {
+                instagramAccountId: account.additionalData?.instagramAccountId,
+                mediaType: mediaUrl?.includes('.mp4') ? 'VIDEO' : 'IMAGE',
+              }),
+              ...(post.platform === 'linkedin' && {
+                authorId: account.additionalData?.authorId,
+                organizationId: account.additionalData?.organizationId,
+              }),
+            };
+
+            const response = await fetch(`/api/${post.platform}/post`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                ...postData,
+                accessToken: account.accessToken,
+              }),
+            });
+
+            const result = await response.json();
+            results.push({
+              platform: post.platform,
+              success: response.ok,
+              data: result,
+            });
+          } catch (error) {
+            console.error(`Failed to post to ${post.platform}:`, error);
+            results.push({
+              platform: post.platform,
+              success: false,
+              error: error,
+            });
+          }
+        }
+
+        onPostCreated?.(enabledPosts);
+        
+        // Reset form if all posts were successful
+        if (results.every(r => r.success)) {
+          setBaseContent('');
+          setMediaUrl('');
+          setScheduledTime('');
         }
       }
 
-      onPostCreated?.(enabledPosts);
-      
-      // Reset form if all posts were successful
-      if (results.every(r => r.success)) {
-        setBaseContent('');
-        setMediaUrl('');
-        setScheduledTime('');
-      }
-
     } catch (error) {
-      console.error('Failed to create posts:', error);
+      console.error('Failed to create/update posts:', error);
     } finally {
       setIsPosting(false);
     }
-
-    return results;
   };
 
   const connectedPlatforms = connectedAccounts.map(acc => acc.platform);
@@ -179,10 +234,12 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
         
         {/* Base Content Input */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="post-content" className="block text-sm font-medium text-gray-700 mb-2">
             Post Content
           </label>
           <textarea
+            id="post-content"
+            name="content"
             value={baseContent}
             onChange={(e) => handleBaseContentChange(e.target.value)}
             placeholder="What's on your mind? This content will be adapted for each platform..."
@@ -193,11 +250,13 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
         {/* Media Upload */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="media-url" className="block text-sm font-medium text-gray-700 mb-2">
               Media URL (optional)
             </label>
             <div className="relative">
               <input
+                id="media-url"
+                name="mediaUrl"
                 type="url"
                 value={mediaUrl}
                 onChange={(e) => setMediaUrl(e.target.value)}
@@ -209,11 +268,13 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="schedule-time" className="block text-sm font-medium text-gray-700 mb-2">
               Schedule (optional)
             </label>
             <div className="relative">
               <input
+                id="schedule-time"
+                name="scheduledTime"
                 type="datetime-local"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
@@ -246,10 +307,13 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <input
+                    id={`platform-${post.platform}`}
+                    name={`platform-${post.platform}`}
                     type="checkbox"
                     checked={post.enabled}
                     onChange={() => togglePlatform(post.platform)}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    aria-label={`Enable ${config.name}`}
                   />
                   <div 
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
@@ -323,12 +387,16 @@ export function MultiPlatformPostCreator({ onPostCreated }: MultiPlatformPostCre
           {isPosting ? (
             <>
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Posting...</span>
+              <span>{isEditing ? 'Updating...' : 'Posting...'}</span>
             </>
           ) : (
             <>
               <PaperAirplaneIcon className="w-5 h-5" />
-              <span>{scheduledTime ? 'Schedule Posts' : 'Post Now'}</span>
+              <span>
+                {isEditing 
+                  ? 'Update Post' 
+                  : scheduledTime ? 'Schedule Posts' : 'Post Now'}
+              </span>
             </>
           )}
         </button>

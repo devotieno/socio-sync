@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import TwitterAccount from '@/components/TwitterAccount';
-import { MultiPlatformManager } from '@/components/MultiPlatformManager';
 
 export default function AccountsPage() {
   const searchParams = useSearchParams();
@@ -118,14 +117,11 @@ export default function AccountsPage() {
         )}
 
         <div className="space-y-6">
-          {/* Multi-Platform Manager */}
-          <MultiPlatformManager />
-
-            {/* Legacy Twitter Account Component (for backward compatibility) */}
+          {/* Twitter/X Account Connection */}
           <div className="backdrop-blur-xl bg-slate-800/50 border border-slate-700/50 rounded-2xl shadow-lg shadow-black/20 overflow-hidden">
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg font-outfit font-medium text-white mb-6">
-                Twitter Integration (Legacy)
+                X (Twitter) Account
               </h3>
               <TwitterAccount />
             </div>

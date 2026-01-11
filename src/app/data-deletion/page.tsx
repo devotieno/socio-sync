@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Data Deletion - Xync',
-  description: 'Request data deletion for Xync - Twitter/X Management Platform'
+  title: 'Data Deletion - 𝕏ync',
+  description: 'Request data deletion for 𝕏ync - Twitter/X Management Platform'
 }
 
 export default function DataDeletion() {
@@ -15,7 +15,7 @@ export default function DataDeletion() {
           <div className="prose prose-gray max-w-none">
             <section className="mb-8">
               <p className="text-gray-700 mb-6">
-                If you want to delete your data from Xync, you have several options:
+                If you want to delete your data from 𝕏ync, you have several options:
               </p>
 
               <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6">

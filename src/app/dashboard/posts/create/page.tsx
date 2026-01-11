@@ -209,7 +209,7 @@ export default function CreatePostPage() {
             <span>All systems operational</span>
           </div>
           <div>•</div>
-          <div>Xync v1.0</div>
+          <div>𝕏ync v1.0</div>
         </div>
       </div>
     </div>

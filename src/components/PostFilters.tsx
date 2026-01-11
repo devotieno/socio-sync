@@ -45,7 +45,6 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
   };
 
   const hasActiveFilters = filters.status !== 'all' || 
-                          filters.platform !== 'all' || 
                           filters.dateRange !== 'all' || 
                           filters.search !== '' ||
                           filters.media !== 'all' ||
@@ -90,23 +89,6 @@ export function PostFilters({ filters, onFiltersChange, totalPosts }: PostFilter
                 <option value="scheduled">⏰ Scheduled</option>
                 <option value="published">✅ Published</option>
                 <option value="failed">❌ Failed</option>
-              </select>
-            </div>
-
-            {/* Platform Filter */}
-            <div>
-              <label className="block text-sm font-medium text-white mb-1">Platform</label>
-              <select
-                value={filters.platform}
-                onChange={(e) => updateFilter('platform', e.target.value)}
-                className="bg-slate-900/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-white/20 focus:border-white/30 min-w-[120px]"
-              >
-                <option value="all">All Platforms</option>
-                {Object.values(PLATFORM_CONFIGS).map((platform) => (
-                  <option key={platform.id} value={platform.id}>
-                    {platform.icon} {platform.name}
-                  </option>
-                ))}
               </select>
             </div>
 

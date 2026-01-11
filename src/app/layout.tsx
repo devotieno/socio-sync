@@ -18,7 +18,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Xync - Social Media Management Platform",
+  title: "𝕏ync - Social Media Management Platform",
   description: "Manage all your social media accounts from one dashboard. Schedule posts, track analytics, and grow your online presence.",
   icons: {
     icon: [

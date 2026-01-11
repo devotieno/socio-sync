@@ -2,6 +2,68 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id: postId } = await params;
+    
+    // Use Firebase Admin SDK
+    const admin = await import('firebase-admin');
+    
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    }
+
+    const db = admin.firestore();
+    const postRef = db.collection('posts').doc(postId);
+    const postSnap = await postRef.get();
+    
+    if (!postSnap.exists) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+    
+    const postData = postSnap.data();
+    
+    // Verify the post belongs to the user
+    if (postData?.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+    
+    // Convert Firestore timestamps to ISO strings
+    const post = {
+      id: postSnap.id,
+      ...postData,
+      createdAt: postData?.createdAt?.toDate?.()?.toISOString() || postData?.createdAt,
+      updatedAt: postData?.updatedAt?.toDate?.()?.toISOString() || postData?.updatedAt,
+      scheduledAt: postData?.scheduledAt?.toDate?.()?.toISOString() || postData?.scheduledAt,
+      publishedAt: postData?.publishedAt?.toDate?.()?.toISOString() || postData?.publishedAt,
+    };
+    
+    return NextResponse.json(post);
+
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -114,10 +176,10 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
     
-    // Only allow editing draft and scheduled posts
-    if (postData.status !== 'draft' && postData.status !== 'scheduled') {
+    // Only allow editing draft, scheduled, and failed posts
+    if (!['draft', 'scheduled', 'failed'].includes(postData.status)) {
       return NextResponse.json({ 
-        error: 'Can only edit draft and scheduled posts' 
+        error: 'Cannot edit published posts' 
       }, { status: 400 });
     }
     

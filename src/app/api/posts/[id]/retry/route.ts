@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebase-admin';
 import { publishToSocialMedia } from '@/lib/social-media-publisher';
 import { SocialMediaPost } from '@/types/post';
 
@@ -20,15 +19,15 @@ export async function POST(
     const { id: postId } = await params;
     
     // First, verify the post exists and belongs to the user
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
+    const postRef = adminDb.collection('posts').doc(postId);
+    const postSnap = await postRef.get();
     
-    if (!postSnap.exists()) {
+    if (!postSnap.exists) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
     
     const postData = postSnap.data();
-    if (postData.userId !== session.user.id) {
+    if (postData?.userId !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
     
@@ -40,7 +39,7 @@ export async function POST(
     }
     
     // Update status to scheduled and try publishing again
-    await updateDoc(postRef, {
+    await postRef.update({
       status: 'scheduled',
       updatedAt: new Date(),
     });
@@ -48,6 +47,13 @@ export async function POST(
     // Attempt to publish
     try {
       await publishToSocialMedia(postId, postData as Omit<SocialMediaPost, 'id'>, session.user.id);
+      
+      // Update status to published after successful publishing
+      await postRef.update({
+        status: 'published',
+        publishedAt: new Date(),
+        updatedAt: new Date(),
+      });
       
       return NextResponse.json({
         success: true,
@@ -58,7 +64,7 @@ export async function POST(
       console.error('Error retrying post:', publishError);
       
       // Update back to failed status
-      await updateDoc(postRef, {
+      await postRef.update({
         status: 'failed',
         updatedAt: new Date(),
       });
@@ -71,8 +77,10 @@ export async function POST(
 
   } catch (error) {
     console.error('Error retrying post:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
-      error: 'Internal server error' 
+      error: 'Internal server error',
+      details: errorMessage
     }, { status: 500 });
   }
 }

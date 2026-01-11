@@ -23,7 +23,9 @@ export default function CreatePostPage() {
       </div>
 
       {/* Multi-Platform Post Creator */}
-      <MultiPlatformPostCreator onPostCreated={handlePostCreated} />
+      <MultiPlatformPostCreator 
+        onPostCreated={handlePostCreated}
+      />
 
       {/* Information Section */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">

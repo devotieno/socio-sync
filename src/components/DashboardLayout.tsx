@@ -30,10 +30,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
     { name: 'Create Post', href: '/dashboard/posts/create', icon: DocumentPlusIcon },
     { name: 'X Posts', href: '/dashboard/posts', icon: CalendarIcon },
-    { name: 'Schedule Manager', href: '/dashboard/schedule-manager', icon: ClockIcon },
     { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
     { name: 'Accounts', href: '/dashboard/accounts', icon: UsersIcon },
-    { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
   ];
 
   const handleSignOut = () => {
@@ -51,10 +49,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center space-x-2">
               <img
                 src="/icon-512.png"
-                alt="Xync Logo"
-                className="w-8 h-8 rounded-lg"
+                alt="𝕏ync Logo"
+                className="w-10 h-10 rounded-lg"
               />
-              <span className="text-xl font-outfit font-bold bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">Xync</span>
+              <span className="text-xl font-outfit font-bold bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">𝕏ync</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -96,10 +94,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center space-x-2">
               <img
                 src="/icon-512.png"
-                alt="Xync Logo"
+                alt="𝕏ync Logo"
                 className="w-8 h-8 rounded-lg"
               />
-              <span className="text-xl font-outfit font-bold bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">Xync</span>
+              <span className="text-xl font-outfit font-bold bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">𝕏ync</span>
             </div>
           </div>
           

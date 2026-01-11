@@ -183,7 +183,7 @@ export default function Home() {
         <div id="features" className="container mx-auto px-4 py-20">
           <div className="text-center mb-16">
             <div className="mb-3">
-              <span className="font-outfit text-lg font-semibold text-slate-400">Xync Features</span>
+              <span className="font-outfit text-lg font-semibold text-slate-400">𝕏ync Features</span>
             </div>
             <h2 className="font-outfit text-4xl md:text-5xl font-bold text-white mb-4">
               Everything you need to succeed on Twitter/X
@@ -277,7 +277,7 @@ export default function Home() {
                 Ready to elevate your Twitter/X game?
               </h2>
               <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-                Join thousands of content creators and businesses who trust <span className="font-semibold text-white">Xync</span> to manage their Twitter/X presence.
+                Join thousands of content creators and businesses who trust <span className="font-semibold text-white">𝕏ync</span> to manage their Twitter/X presence.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
@@ -352,7 +352,7 @@ export default function Home() {
             </div>
           </div>
           <div className="text-center text-slate-400 text-sm pt-8 border-t border-slate-800/50">
-            <p>&copy; 2026 <span className="font-semibold text-white">Xync</span>. All rights reserved. Made with ❤️ for content creators.</p>
+            <p>&copy; 2026 <span className="font-semibold text-white">𝕏ync</span>. All rights reserved. Made with ❤️ for content creators.</p>
           </div>
         </div>
       </footer>

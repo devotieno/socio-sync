@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Xync',
-  description: 'Privacy Policy for Xync - Twitter/X Management Platform'
+  title: 'Privacy Policy - 𝕏ync',
+  description: 'Privacy Policy for 𝕏ync - Twitter/X Management Platform'
 }
 
 export default function PrivacyPolicy() {
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Information We Collect</h2>
               <p className="text-gray-700 mb-4">
-                When you use Xync, we collect information to provide and improve our Twitter/X management services:
+                When you use 𝕏ync, we collect information to provide and improve our Twitter/X management services:
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Account information (email, name) when you sign up</li>
