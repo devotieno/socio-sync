@@ -381,10 +381,10 @@ export default function PostsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl px-6 py-4">
+      <div className="backdrop-blur-xl bg-slate-800/30 border border-slate-700/50 rounded-2xl px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-outfit font-bold text-white">X Posts Management</h1>
+            <h1 className="text-xl sm:text-2xl font-outfit font-bold text-white">X Posts Management</h1>
           </div>
         </div>
       </div>

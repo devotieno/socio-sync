@@ -201,42 +201,42 @@ export function AnalyticsDashboard({ className = '', posts }: AnalyticsProps) {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-4">
+        <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-3 sm:p-4">
           <div className="flex items-center">
-            <ChartBarIcon className="w-8 h-8 text-blue-400 mr-3" />
+            <ChartBarIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 mr-2 sm:mr-3" />
             <div>
-              <p className="text-sm font-medium text-blue-300">Total Posts</p>
-              <p className="text-2xl font-bold text-white">{summary?.totalPosts || 0}</p>
+              <p className="text-xs sm:text-sm font-medium text-blue-300">Total Posts</p>
+              <p className="text-lg sm:text-2xl font-bold text-white">{summary?.totalPosts || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-4">
+        <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-3 sm:p-4">
           <div className="flex items-center">
-            <UserGroupIcon className="w-8 h-8 text-green-400 mr-3" />
+            <UserGroupIcon className="w-6 h-6 sm:w-8 sm:h-8 text-green-400 mr-2 sm:mr-3" />
             <div>
-              <p className="text-sm font-medium text-green-300">Total Impressions</p>
-              <p className="text-2xl font-bold text-white">{formatNumber(summary?.totalImpressions || 0)}</p>
+              <p className="text-xs sm:text-sm font-medium text-green-300">Total Impressions</p>
+              <p className="text-lg sm:text-2xl font-bold text-white">{formatNumber(summary?.totalImpressions || 0)}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-purple-900/30 border border-purple-700/50 rounded-lg p-4">
+        <div className="bg-purple-900/30 border border-purple-700/50 rounded-lg p-3 sm:p-4">
           <div className="flex items-center">
-            <HeartIcon className="w-8 h-8 text-purple-400 mr-3" />
+            <HeartIcon className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400 mr-2 sm:mr-3" />
             <div>
-              <p className="text-sm font-medium text-purple-300">Total Engagements</p>
-              <p className="text-2xl font-bold text-white">{formatNumber(summary?.totalEngagements || 0)}</p>
+              <p className="text-xs sm:text-sm font-medium text-purple-300">Total Engagements</p>
+              <p className="text-lg sm:text-2xl font-bold text-white">{formatNumber(summary?.totalEngagements || 0)}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-orange-900/30 border border-orange-700/50 rounded-lg p-4">
+        <div className="bg-orange-900/30 border border-orange-700/50 rounded-lg p-3 sm:p-4">
           <div className="flex items-center">
-            <ArrowTrendingUpIcon className="w-8 h-8 text-orange-400 mr-3" />
+            <ArrowTrendingUpIcon className="w-6 h-6 sm:w-8 sm:h-8 text-orange-400 mr-2 sm:mr-3" />
             <div>
-              <p className="text-sm font-medium text-orange-300">Avg. Engagement Rate</p>
-              <p className="text-2xl font-bold text-white">{summary?.averageEngagementRate?.toFixed(1) || 0}%</p>
+              <p className="text-xs sm:text-sm font-medium text-orange-300">Avg. Engagement Rate</p>
+              <p className="text-lg sm:text-2xl font-bold text-white">{summary?.averageEngagementRate?.toFixed(1) || 0}%</p>
             </div>
           </div>
         </div>

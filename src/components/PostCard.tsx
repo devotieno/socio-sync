@@ -82,12 +82,12 @@ export function PostCard({
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
       {/* Header */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <StatusBadge status={post.status} />
-              <span className="text-sm font-inter text-gray-400">
+              <span className="text-xs sm:text-sm font-inter text-gray-400">
                 {dateInfo.label} {formatDate(dateInfo.date)}
               </span>
             </div>
@@ -97,10 +97,10 @@ export function PostCard({
                 className="flex-1 cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
-                <p className="text-gray-100 font-inter text-[15px] leading-relaxed">
+                <p className="text-gray-100 font-inter text-sm sm:text-[15px] leading-relaxed">
                   {isExpanded ? post.content : truncateContent(post.content, 150)}
                   {post.content.length > 150 && (
-                    <button className="ml-2 text-blue-400 hover:text-blue-300 text-sm font-medium">
+                    <button className="ml-2 text-blue-400 hover:text-blue-300 text-xs sm:text-sm font-medium">
                       {isExpanded ? 'Show less' : 'Show more'}
                     </button>
                   )}

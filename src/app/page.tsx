@@ -403,8 +403,7 @@ export default function Home() {
               <h4 className="font-outfit font-semibold text-white mb-4">Connect</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter</a></li>
-                <li><a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a></li>
-                <li><a href="mailto:support@xync.app" className="hover:text-white transition-colors">Support</a></li>
+                <li><a href="mailto:brianoko2021@gmail.com" className="hover:text-white transition-colors">Support</a></li>
               </ul>
             </div>
           </div>

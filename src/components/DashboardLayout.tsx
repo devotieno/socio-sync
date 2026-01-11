@@ -70,10 +70,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <li key={item.name}>
                     <Link
                       href={item.href}
+                      onClick={() => setSidebarOpen(false)}
                       className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg ${
                         isActive
-                          ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                          : 'text-gray-700 hover:bg-gray-50'
+                          ? 'bg-slate-700/50 text-white border-l-2 border-white'
+                          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white'
                       }`}
                     >
                       <item.icon className="h-5 w-5 mr-3" />
@@ -84,6 +85,32 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               })}
             </ul>
           </nav>
+
+          {/* Mobile User profile section */}
+          <div className="border-t border-slate-700/50 p-4">
+            <div className="flex items-center space-x-3 mb-3">
+              <img
+                className="h-10 w-10 rounded-full ring-2 ring-slate-700"
+                src={session?.user?.image || '/default-avatar.png'}
+                alt="User avatar"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  {session?.user?.name || session?.user?.email}
+                </p>
+                <p className="text-xs text-slate-400 truncate">
+                  {session?.user?.email}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 rounded-lg transition-colors border border-red-600/30"
+            >
+              <ArrowRightOnRectangleIcon className="h-5 w-5" />
+              <span className="font-medium">Sign Out</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -164,14 +191,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </button>
           
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-slate-300">
+            <div className="text-xs sm:text-sm text-slate-300 truncate max-w-[200px] sm:max-w-none">
               Welcome back, {session?.user?.name?.split(' ')[0] || 'User'}!
             </div>
           </div>
         </div>
 
         {/* Page content */}
-        <main className="p-4 lg:p-6">
+        <main className="p-3 sm:p-4 lg:p-6">
           {children}
         </main>
       </div>

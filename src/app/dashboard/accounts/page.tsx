@@ -58,10 +58,10 @@ export default function AccountsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-outfit font-bold text-white">
+        <h1 className="text-2xl sm:text-3xl font-outfit font-bold text-white">
           Connected Accounts
         </h1>
-        <p className="mt-2 text-slate-400">
+        <p className="mt-2 text-sm sm:text-base text-slate-400">
           Manage your Twitter/X account connections
         </p>
       </div>

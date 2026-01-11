@@ -1,7 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import TwitterProvider from 'next-auth/providers/twitter';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
 
@@ -10,11 +9,6 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    TwitterProvider({
-      clientId: process.env.TWITTER_CLIENT_ID!,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET!,
-      version: '2.0',
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -60,26 +54,17 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'google') {
         token.accessToken = account.access_token;
       }
-      if (account?.provider === 'twitter') {
-        token.twitterAccessToken = account.access_token;
-        token.twitterRefreshToken = account.refresh_token;
-        token.isTwitterAccount = true;
-      }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.uid as string;
-        // Store Twitter info in session for later use
-        if (token.isTwitterAccount) {
-          // We can access this via token if needed
-        }
       }
       return session;
     },
     async signIn({ user, account, profile }) {
-      // Handle account linking for OAuth providers (Google, Twitter)
-      if (account?.provider === 'google' || account?.provider === 'twitter') {
+      // Handle account linking for OAuth providers (Google)
+      if (account?.provider === 'google') {
         try {
           // Check if an account with this email already exists
           const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/link-account`, {

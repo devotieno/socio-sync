@@ -215,23 +215,23 @@ export default function TwitterAccount() {
       {accounts.length > 0 ? (
         <div className="space-y-4">
           {accounts.map((account, index) => (
-            <div key={account.accountId} className="border rounded-lg p-4">
-              <div className="flex items-center justify-between">
+            <div key={account.accountId} className="border rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center space-x-3">
                   <img
                     src={account.profile_image_url || '/default-avatar.png'}
                     alt={account.name}
-                    className="w-12 h-12 rounded-full"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0"
                   />
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h4 className="font-semibold">{account.name}</h4>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center space-x-2 flex-wrap">
+                      <h4 className="font-semibold text-sm sm:text-base truncate">{account.name}</h4>
                       {account.isDefault && (
-                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full whitespace-nowrap">
                           Default
                         </span>
                       )}
-                      <span className={`text-xs px-2 py-1 rounded-full ${
+                      <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
                         account.id.includes('manual_') 
                           ? 'bg-green-100 text-green-800' 
                           : account.id.includes('_') && account.id.split('_').length > 2
@@ -243,20 +243,20 @@ export default function TwitterAccount() {
                           : 'OAuth'}
                       </span>
                     </div>
-                    <p className="text-gray-600">@{account.username}</p>
+                    <p className="text-gray-600 text-sm truncate">@{account.username}</p>
                     {account.followers_count !== undefined && (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs sm:text-sm text-gray-500">
                         {account.followers_count.toLocaleString()} followers
                       </p>
                     )}
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                   {!account.isDefault && accounts.length > 1 && (
                     <button
                       onClick={() => setDefaultAccount(account.accountId)}
-                      className="text-sm text-blue-600 hover:text-blue-800 px-2 py-1 rounded border border-blue-300 hover:border-blue-500"
+                      className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 px-2 sm:px-3 py-1.5 sm:py-2 rounded border border-blue-300 hover:border-blue-500 whitespace-nowrap"
                     >
                       Set Default
                     </button>
@@ -264,7 +264,7 @@ export default function TwitterAccount() {
                   <button
                     onClick={() => disconnectTwitter(account.accountId)}
                     disabled={loading}
-                    className="text-sm text-red-600 hover:text-red-800 px-2 py-1 rounded border border-red-300 hover:border-red-500 disabled:opacity-50"
+                    className="text-xs sm:text-sm text-red-600 hover:text-red-800 px-2 sm:px-3 py-1.5 sm:py-2 rounded border border-red-300 hover:border-red-500 disabled:opacity-50 whitespace-nowrap"
                   >
                     Disconnect
                   </button>
@@ -276,7 +276,7 @@ export default function TwitterAccount() {
           <button
             onClick={() => setShowPinAuth(true)}
             disabled={isConnecting}
-            className="w-full py-3 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border-2 border-dashed border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium"
+            className="w-full py-2.5 sm:py-3 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center border-2 border-dashed border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-sm sm:text-base"
           >
             <FaPlus className="mr-2" />
             Connect X Account

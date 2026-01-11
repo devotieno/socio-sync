@@ -49,16 +49,6 @@ export default function SignIn() {
     }
   };
 
-  const handleTwitterSignIn = async () => {
-    setIsLoading(true);
-    try {
-      await signIn('twitter', { callbackUrl: '/dashboard/accounts?twitter_connected=true' });
-    } catch (error) {
-      toast.error('Twitter sign in failed');
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-slate-800 relative overflow-hidden flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Animated Background Elements */}
@@ -168,7 +158,7 @@ export default function SignIn() {
               </div>
             </div>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-6">
               <button
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
@@ -193,17 +183,6 @@ export default function SignIn() {
                   />
                 </svg>
                 <span className="ml-2">Sign in with Google</span>
-              </button>
-              
-              <button
-                onClick={handleTwitterSignIn}
-                disabled={isLoading}
-                className="w-full inline-flex justify-center items-center py-3 px-4 border border-slate-700 rounded-lg shadow-sm bg-slate-800/50 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                </svg>
-                <span className="ml-2">Sign in with Twitter</span>
               </button>
             </div>
           </div>
