@@ -1,53 +1,35 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { SUBSCRIPTION_PLANS } from '@/lib/lemonsqueezy';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function PricingPage() {
-  const { data: session } = useSession();
+export default function PublicPricingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
-  const handleSubscribe = async (variantId: string, planId: string) => {
-    if (!session) {
-      router.push('/auth/signin');
-      return;
-    }
-
-    if (!variantId) {
-      alert('This plan is not available');
-      return;
-    }
-
-    setLoading(planId);
-
-    try {
-      const response = await fetch('/api/subscription/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variantId }),
-      });
-
-      const data = await response.json();
-
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      alert('Failed to start checkout. Please try again.');
-      setLoading(null);
+  const handleGetStarted = (planId: string) => {
+    if (planId === 'free') {
+      router.push('/auth/signup');
+    } else {
+      router.push('/auth/signup?plan=' + planId);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 py-12 px-4">
       <div className="max-w-7xl mx-auto">
+        {/* Back to Home */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Link>
+
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-white mb-4">
@@ -109,15 +91,13 @@ export default function PricingPage() {
 
               {/* CTA Button */}
               <button
-                onClick={() => handleSubscribe(plan.variantId, plan.id)}
-                disabled={loading === plan.id || plan.id === 'free'}
+                onClick={() => handleGetStarted(plan.id)}
+                disabled={loading === plan.id}
                 className={`
                   w-full py-3 px-6 rounded-lg font-semibold transition-all
                   ${
                     plan.id === 'pro'
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                      : plan.id === 'free'
-                      ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed'
                       : 'bg-slate-700 hover:bg-slate-600 text-white'
                   }
                   disabled:opacity-50 disabled:cursor-not-allowed
@@ -129,8 +109,6 @@ export default function PricingPage() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Processing...
                   </>
-                ) : plan.id === 'free' ? (
-                  'Current Plan'
                 ) : (
                   'Get Started'
                 )}
@@ -159,6 +137,10 @@ export default function PricingPage() {
               <div>
                 <h4 className="text-white font-semibold mb-2">Is my Twitter/X data secure?</h4>
                 <p className="text-slate-400">Yes! We use OAuth 2.0 authentication and encrypt all stored credentials. We never store your Twitter password.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Can I try before I buy?</h4>
+                <p className="text-slate-400">Yes! Start with our free plan and upgrade anytime when you're ready for more features.</p>
               </div>
             </div>
           </div>
