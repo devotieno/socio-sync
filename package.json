@@ -1,7 +1,8 @@
 {
-  "name": "sync",
+  "name": "xync",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://xync.space",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
